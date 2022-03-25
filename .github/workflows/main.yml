@@ -20,6 +20,8 @@ jobs:
     name: build and deploy github pages
     runs-on: ubuntu-latest
     steps:
+      - name: Clone Repo
+        uses: actions/checkout@v2.3.4
       - name: Setup Node.js environment
         uses: actions/setup-node@v3.0.0
       - name: Install dependencies
