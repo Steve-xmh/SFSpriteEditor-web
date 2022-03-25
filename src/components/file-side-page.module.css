@@ -1,0 +1,6 @@
+.file-buttons {
+    display: grid;
+    grid-auto-rows: 1fr;
+    gap: 4px;
+    padding: 4px;
+}

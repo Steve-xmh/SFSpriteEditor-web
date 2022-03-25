@@ -1,0 +1,114 @@
+{
+  "animations.delay": {
+    "defaultMessage": "Delay"
+  },
+  "animations.delect-selected-animation-frame": {
+    "defaultMessage": "Delete Selected Frame"
+  },
+  "animations.delete-selected-animation": {
+    "defaultMessage": "Delete Selected Animation"
+  },
+  "animations.frame-config": {
+    "defaultMessage": "Frame Config"
+  },
+  "animations.loop": {
+    "defaultMessage": "Loop"
+  },
+  "animations.move-down-selected-animation-frame": {
+    "defaultMessage": "Move Down Frame"
+  },
+  "animations.move-up-selected-animation-frame": {
+    "defaultMessage": "Move Up Frame"
+  },
+  "animations.new-animation": {
+    "defaultMessage": "New Animation"
+  },
+  "animations.new-animation-frame": {
+    "defaultMessage": "New Frame"
+  },
+  "animations.palette-id": {
+    "defaultMessage": "Palette ID"
+  },
+  "animations.sprite-id": {
+    "defaultMessage": "Sprite ID"
+  },
+  "edit.editing.text": {
+    "defaultMessage": "Text"
+  },
+  "edit.show-zero-index-color": {
+    "defaultMessage": "Show zero index color"
+  },
+  "edit.switch-preview-palette": {
+    "defaultMessage": "Switch Preview Palette"
+  },
+  "edit.tool.color-picker": {
+    "defaultMessage": "Color Picker"
+  },
+  "edit.tool.cursor": {
+    "defaultMessage": "Cursor"
+  },
+  "edit.tool.eraser": {
+    "defaultMessage": "Eraser"
+  },
+  "edit.tool.fill": {
+    "defaultMessage": "Fill"
+  },
+  "edit.tool.filled-rectangle": {
+    "defaultMessage": "Filled Rectangle"
+  },
+  "edit.tool.line": {
+    "defaultMessage": "Line"
+  },
+  "edit.tool.move-subsprite": {
+    "defaultMessage": "Move Subsprite"
+  },
+  "edit.tool.pencil": {
+    "defaultMessage": "Pencil"
+  },
+  "edit.tool.rectangle": {
+    "defaultMessage": "Rectangle"
+  },
+  "edit.tool.text": {
+    "defaultMessage": "Text"
+  },
+  "file.new": {
+    "defaultMessage": "New File",
+    "description": "A button that creates new empty SFSprite file"
+  },
+  "file.open": {
+    "defaultMessage": "Open File(s)...",
+    "description": "A button that open SFSprite file"
+  },
+  "file.save": {
+    "defaultMessage": "Save File...",
+    "description": "A button that save SFSprite file"
+  },
+  "file.saveas": {
+    "defaultMessage": "Save File as...",
+    "description": "A button that save SFSprite into another file"
+  },
+  "options.language": {
+    "defaultMessage": "Display Language"
+  },
+  "sprite-item.delete": {
+    "defaultMessage": "Delete"
+  },
+  "tab.about": {
+    "defaultMessage": "About"
+  },
+  "tab.animations": {
+    "defaultMessage": "Animations"
+  },
+  "tab.edit": {
+    "defaultMessage": "Edit"
+  },
+  "tab.file": {
+    "defaultMessage": "File"
+  },
+  "tab.options": {
+    "defaultMessage": "Options"
+  },
+  "tab.palettes": {
+    "defaultMessage": "Palettes"
+  }
+}

@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "ESNext",
+            "ES2015",
+            "ES7",
+            "ES2016",
+            "DOM",
+            "WebWorker"
+        ],
+        "target": "ESNext",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "useDefineForClassFields": true,
+        "allowSyntheticDefaultImports": true,
+        "jsx": "react-jsx"
+    }
+}

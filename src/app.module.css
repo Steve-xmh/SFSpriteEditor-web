@@ -1,0 +1,25 @@
+.app {
+    background-color: #fafafa;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+}
+.sidebar {
+    width: 2rem;
+    flex: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #fafafa;
+    border-right: 1px solid #ececec;
+}
+.tabpage {
+    width: 20rem;
+    display: flex;
+    flex-direction: column;
+    background-color: #fafafa;
+    border-right: 1px solid #ececec;
+    overflow-x: visible;
+    overflow-y: hidden;
+}

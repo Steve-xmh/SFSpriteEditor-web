@@ -1,0 +1,12 @@
+.sidebar-button {
+    height: 2rem;
+    background-color: #fafafa;
+    border: none;
+    cursor: pointer;
+}
+.sidebar-button:hover {
+    background-color: #ececec;
+}
+.sidebar-button:active {
+    background-color: #dfdfdf;
+}

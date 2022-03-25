@@ -1,0 +1,88 @@
+.edit-page {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.tool-button {
+    margin: 0;
+    padding: 0.25rem 0.5rem;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.tool-button.active {
+    color: #000;
+    background: #0002;
+}
+
+.tool-button .shortcut {
+    color : #999;
+}
+
+.toolbar {
+    display: grid;
+    grid: 1fr / 1fr 1fr;
+}
+
+.palette-color-switcher {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+}
+
+.palette {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.color {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+}
+
+.color.selected {
+    border: 2px solid white;
+}
+
+.color:hover {
+    border: 1px solid white;
+}
+
+.subsprite-list {
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    flex: 1;
+}
+
+.subsprite:nth-child(1) {
+    border-top: 1px solid #0001;
+}
+
+.subsprite {
+    border-bottom: 1px solid #0001;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.options {
+    display: grid;
+    margin: 1rem;
+    grid: auto 100%;
+    gap: 4px;
+    grid-template-columns: auto auto;
+}

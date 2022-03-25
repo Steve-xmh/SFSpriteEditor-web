@@ -1,0 +1,8 @@
+.canvas {
+    flex: 1;
+    overflow: hidden;
+    background-color: #AAAAAA;
+}
+.canvas canvas {
+    image-rendering: pixelated;
+}

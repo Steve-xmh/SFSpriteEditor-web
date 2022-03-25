@@ -1,0 +1,114 @@
+{
+  "animations.delay": {
+    "defaultMessage": "延迟"
+  },
+  "animations.delect-selected-animation-frame": {
+    "defaultMessage": "删除选中动画帧"
+  },
+  "animations.delete-selected-animation": {
+    "defaultMessage": "删除选中动画"
+  },
+  "animations.frame-config": {
+    "defaultMessage": "动画帧参数"
+  },
+  "animations.loop": {
+    "defaultMessage": "循环"
+  },
+  "animations.move-down-selected-animation-frame": {
+    "defaultMessage": "向下移动选中动画帧"
+  },
+  "animations.move-up-selected-animation-frame": {
+    "defaultMessage": "向上移动选中动画帧"
+  },
+  "animations.new-animation": {
+    "defaultMessage": "新建动画"
+  },
+  "animations.new-animation-frame": {
+    "defaultMessage": "新建动画帧"
+  },
+  "animations.palette-id": {
+    "defaultMessage": "调色板 ID"
+  },
+  "animations.sprite-id": {
+    "defaultMessage": "精灵 ID"
+  },
+  "edit.editing.text": {
+    "defaultMessage": "编辑文本"
+  },
+  "edit.show-zero-index-color": {
+    "defaultMessage": "显示零索引颜色"
+  },
+  "edit.switch-preview-palette": {
+    "defaultMessage": "切换预览调色板"
+  },
+  "edit.tool.color-picker": {
+    "defaultMessage": "取色器"
+  },
+  "edit.tool.cursor": {
+    "defaultMessage": "光标"
+  },
+  "edit.tool.eraser": {
+    "defaultMessage": "橡皮擦"
+  },
+  "edit.tool.fill": {
+    "defaultMessage": "填充"
+  },
+  "edit.tool.filled-rectangle": {
+    "defaultMessage": "实心矩形"
+  },
+  "edit.tool.line": {
+    "defaultMessage": "线条"
+  },
+  "edit.tool.move-subsprite": {
+    "defaultMessage": "移动子精灵"
+  },
+  "edit.tool.pencil": {
+    "defaultMessage": "铅笔"
+  },
+  "edit.tool.rectangle": {
+    "defaultMessage": "空心矩形"
+  },
+  "edit.tool.text": {
+    "defaultMessage": "文字"
+  },
+  "file.new": {
+    "defaultMessage": "新建",
+    "description": "A button that creates new empty SFSprite file"
+  },
+  "file.open": {
+    "defaultMessage": "打开",
+    "description": "A button that open SFSprite file"
+  },
+  "file.save": {
+    "defaultMessage": "保存",
+    "description": "A button that save SFSprite file"
+  },
+  "file.saveas": {
+    "defaultMessage": "另存为",
+    "description": "A button that save SFSprite into another file"
+  },
+  "options.language": {
+    "defaultMessage": "显示语言"
+  },
+  "sprite-item.delete": {
+    "defaultMessage": "删除"
+  },
+  "tab.about": {
+    "defaultMessage": "关于"
+  },
+  "tab.animations": {
+    "defaultMessage": "动画"
+  },
+  "tab.edit": {
+    "defaultMessage": "编辑"
+  },
+  "tab.file": {
+    "defaultMessage": "文件"
+  },
+  "tab.options": {
+    "defaultMessage": "选项"
+  },
+  "tab.palettes": {
+    "defaultMessage": "调色板"
+  }
+}

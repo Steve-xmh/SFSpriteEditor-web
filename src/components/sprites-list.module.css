@@ -1,0 +1,45 @@
+.sprite-list {
+    display: flex;
+    flex-direction: row;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 100%;
+}
+
+.sprite-button {
+    display: flex;
+    flex-direction: row;
+}
+
+.sprite-button > button:nth-child(2) {
+    padding: 0 1rem;
+    word-break: keep-all;
+    flex: 0;
+}
+
+.sprite-button > button:nth-child(1) {
+    overflow: hidden;
+}
+
+.sprite-button > button > img {
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.sprite-button > button {
+    width: 100%;
+    height: 4rem;
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.sprite-button > button.selected {
+    background-color: #0001;
+}
+.sprite-button > button:hover {
+    background-color: #0002;
+}
+.sprite-button > button:active {
+    background-color: #0004;
+}
