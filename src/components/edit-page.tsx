@@ -25,6 +25,7 @@ export const PaletteColorSwitcher: FunctionComponent = props => {
     return <div className={styles.paletteColorSwitcher}>
         <div className={styles.palette}>
             {
+                palette &&
                 palette.map(
                     (color, i) =>
                         <div
