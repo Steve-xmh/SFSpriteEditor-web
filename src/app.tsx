@@ -4,7 +4,7 @@ import { SidebarButton } from './components/sidebar-button'
 import { useDispatch, useSelector } from 'react-redux'
 import { getCurrentTab, setTab } from './reducers/tab'
 import { SpriteList } from './components/sprites-list'
-import { PaletteList } from './components/palettes'
+import { PalettePage } from './components/palettes-page'
 import { FileSidePage } from './components/file-side-page'
 import { DebugPage } from './components/debug-page'
 import { switchPreviewPalette } from './reducers/editing'
@@ -23,6 +23,8 @@ import aboutSvg from './assets/about.svg'
 import { EditorCanvas } from './components/editor-canvas'
 import { OptionsPage } from './components/options-page'
 import { useIntl } from 'react-intl'
+import { TilsetsPage } from './components/tilesets-page'
+import { LoadingDialog } from './components/loading-dialog'
 
 export function App() {
   const dispatch = useDispatch()
@@ -51,14 +53,14 @@ export function App() {
           <img src={editSvg}></img>
         </SidebarButton>
         <SidebarButton title={intl.formatMessage({
-          id: 'tab.palettes',
-          defaultMessage: 'Palettes',
-        })} onClick={toggleTab('tiles')}>
+          id: 'tab.tilesets',
+          defaultMessage: 'Tilesets',
+        })} onClick={toggleTab('tilesets')}>
           <img src={tilesSvg}></img>
         </SidebarButton>
         <SidebarButton title={intl.formatMessage({
-          id: 'tab.animations',
-          defaultMessage: 'Animations',
+          id: 'tab.palettes',
+          defaultMessage: 'Palettes',
         })} onClick={toggleTab('palettes')}>
           <img src={palettesSvg}></img>
         </SidebarButton>
@@ -89,7 +91,8 @@ export function App() {
       </div>
       <div className={styles.tabpage} style={{ display: currentTab ? 'block' : 'none' }}>
         {currentTab === 'file' && <FileSidePage />}
-        {currentTab === 'palettes' && <PaletteList />}
+        {currentTab === 'palettes' && <PalettePage />}
+        {currentTab === 'tilesets' && <TilsetsPage />}
         {currentTab === 'animations' && <AnimationsPage />}
         {currentTab === 'edit' && <EditPage />}
         {currentTab === 'options' && <OptionsPage />}
@@ -98,6 +101,7 @@ export function App() {
       </div>
       <EditorCanvas />
       <SwitchPalettesDialog dialogId='switchPreviewPalette' onSelectedPalette={id => dispatch(switchPreviewPalette(id))} />
+      <LoadingDialog />
     </div>
   )
 }

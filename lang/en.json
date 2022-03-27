@@ -1,4 +1,19 @@
 {
+  "about.credits.bnspriteeditor": {
+    "defaultMessage": "BNSpriteEditor"
+  },
+  "about.credits.prof9": {
+    "defaultMessage": "Prof.9"
+  },
+  "about.credits.prof9-sprite-file-struct": {
+    "defaultMessage": "Prof.9's description of Sprite File Structure"
+  },
+  "about.credits.title": {
+    "defaultMessage": "Credits"
+  },
+  "about.credits.topic-of-bnspriteeditor": {
+    "defaultMessage": "The topic of BNSpriteEditor"
+  },
   "animations.delay": {
     "defaultMessage": "Delay"
   },
@@ -71,6 +86,52 @@
   "edit.tool.text": {
     "defaultMessage": "Text"
   },
+  "error.read-error.animations-header-overflow": {
+    "defaultMessage": "Animations header position {address} overflowed with file size {fileSize}"
+  },
+  "error.read-error.header-too-small": {
+    "defaultMessage": "Header too small with file size {fileSize"
+  },
+  "error.read-error.no-last-subsprite-mark": {
+    "defaultMessage": "Sprite {spriteId} has no last SubSprite mark"
+  },
+  "error.read-error.palettes-address-overflow": {
+    "defaultMessage": "Palettes address overflowed with {address} and file size is {fileSize}"
+  },
+  "error.read-error.palettes-header-overflow": {
+    "defaultMessage": "Palettes header position {address} overflowed with file size {fileSize}"
+  },
+  "error.read-error.sprites-address-overflow": {
+    "defaultMessage": "Sprites address overflowed with {address} and file size is {fileSize}"
+  },
+  "error.read-error.sprites-header-overflow": {
+    "defaultMessage": "Sprites header position {address} overflowed with file size {fileSize}"
+  },
+  "error.read-error.tilesets-address-overflow": {
+    "defaultMessage": "Tilesets address overflowed with {address} and file size is {fileSize}"
+  },
+  "error.read-error.tilesets-eof": {
+    "defaultMessage": "Met end of file while reading tileset {tilesetId} at {address} and file size is {fileSize}"
+  },
+  "error.read-error.tilesets-header-overflow": {
+    "defaultMessage": "Tilesets header position {address} overflowed with file size {fileSize}"
+  },
+  "error.read-error.tilesets-wrong-position": {
+    "defaultMessage": "Tilesets at {address} is not at the expected position and file size is {fileSize}"
+  },
+  "error.read-error.tilesets-wrong-size": {
+    "defaultMessage": "Size of tilesets at {address} is incorrect ({size}) and file size is {fileSize}"
+  },
+  "error.read-error.unknown": {
+    "defaultMessage": "Unknown error: {error}"
+  },
+  "error.read-error.unsupported-color-mode": {
+    "defaultMessage": "Unsupported color mode {colorDepth}"
+  },
+  "file.closeall": {
+    "defaultMessage": "Close all files",
+    "description": "A button that close all files"
+  },
   "file.new": {
     "defaultMessage": "New File",
     "description": "A button that creates new empty SFSprite file"
@@ -87,8 +148,20 @@
     "defaultMessage": "Save File as...",
     "description": "A button that save SFSprite into another file"
   },
+  "loading.error-msg": {
+    "defaultMessage": "{amount, plural, =0 {No files} one {A file} two {Two files} other {{amount} files}} can't be opened, click other area to close and select opened file to go on"
+  },
+  "loading.loading-msg": {
+    "defaultMessage": "Loading"
+  },
   "options.language": {
     "defaultMessage": "Display Language"
+  },
+  "palettes.new-palette": {
+    "defaultMessage": "New Palette"
+  },
+  "palettes.toggle-color-mode": {
+    "defaultMessage": "Toggle color mode"
   },
   "sprite-item.delete": {
     "defaultMessage": "Delete"
@@ -110,5 +183,8 @@
   },
   "tab.palettes": {
     "defaultMessage": "Palettes"
+  },
+  "tab.tilesets": {
+    "defaultMessage": "Tilesets"
   }
 }

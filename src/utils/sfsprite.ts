@@ -1,9 +1,110 @@
 import { BufferReader } from './buffer'
 import { Color, rgbaToHexARGB } from './color'
 
-class ReadError extends Error {
-    constructor(msg: string) {
-        super(msg)
+export class SFSpriteReadError extends Error {
+    constructor(public readonly errorId: number = 0) {
+        super(`SFSpriteReadError: ${errorId}`)
+    }
+}
+export class HeaderTooSmallReadError extends SFSpriteReadError {
+    constructor(
+        public readonly fileSize: number
+    ) {
+        super(1)
+    }
+}
+export class TilesetsHeaderOverflowReadError extends SFSpriteReadError {
+    constructor(
+        public readonly fileSize: number,
+        public readonly address: number
+    ) {
+        super(2)
+    }
+}
+export class PalettesHeaderOverflowReadError extends SFSpriteReadError {
+    constructor(
+        public readonly fileSize: number,
+        public readonly address: number
+    ) {
+        super(3)
+    }
+}
+export class SpritesHeaderOverflowReadError extends SFSpriteReadError {
+    constructor(
+        public readonly fileSize: number,
+        public readonly address: number
+    ) {
+        super(4)
+    }
+}
+export class AnimationsHeaderOverflowReadError extends SFSpriteReadError { 
+    constructor(
+        public readonly fileSize: number,
+        public readonly address: number
+    ) {
+        super(5)
+    }
+}
+
+export class PalettesAddressOverflowReadError extends SFSpriteReadError {
+    constructor(
+        public readonly fileSize: number,
+        public readonly address: number
+    ) {
+        super(6)
+    }
+}
+export class SpritesAddressOverflowReadError extends SFSpriteReadError {
+    constructor(
+        public readonly fileSize: number,
+        public readonly address: number
+    ) {
+        super(7)
+    }
+}
+export class TilesetsAddressOverflowReadError extends SFSpriteReadError {
+    constructor(
+        public readonly fileSize: number,
+        public readonly address: number
+    ) {
+        super(8)
+    }
+}
+export class TilesetsEOFReadError extends SFSpriteReadError {
+    constructor(
+        public readonly tilesetId: number,
+        public readonly fileSize: number,
+        public readonly address: number
+    ) {
+        super(9)
+    }
+}
+export class TilesetsWrongPositionReadError extends SFSpriteReadError {
+    constructor(
+        public readonly fileSize: number,
+        public readonly address: number
+    ) {
+        super(10)
+    }
+}
+export class TilesetsWrongSizeReadError extends SFSpriteReadError {
+    constructor(
+        public readonly fileSize: number,
+        public readonly address: number,
+        public readonly size: number
+    ) {
+        super(11)
+    }
+}
+
+export class UnsupportedColorModeReadError extends SFSpriteReadError {
+    constructor(public readonly colorDepth: number) {
+        super(12)
+    }
+}
+export class NoLastSubspriteMarkReadError extends SFSpriteReadError {
+    constructor(public readonly spriteId: number) {
+        super(13)
     }
 }
 
@@ -127,197 +228,197 @@ export interface WriteOption {
 }
 
 export function writeSpriteToBuffer(options: WriteOption) {
-    
-        // 计算数据的大小
-        // File Header
-        let size = 4 * 5
 
-        // Tileset Header
-        size += 2 * 4
+    // 计算数据的大小
+    // File Header
+    let size = 4 * 5
 
-        // Palette Header
-        size += 2 * 2
+    // Tileset Header
+    size += 2 * 4
 
-        // Animation Header
-        size += 2 * 2
+    // Palette Header
+    size += 2 * 2
 
-        // Sprite Header
-        size += 2 * 2
+    // Animation Header
+    size += 2 * 2
 
-        // Tileset
-        const tileSize = options.colorMode ? 0x40 : 0x20
-        const tilesetHeaderSize = options.sprites.length * 4
-        const tilesetSize = options.tilesets.map(
-            v => v.map((i: { byteLength: any }) => i.byteLength).reduce((p: any, c: any) => p + c, 0)
-        ).map(v => (v / (options.colorMode ? 1 : 2)) | 0)
-            .reduce((p, c) => p + c, 0)
+    // Sprite Header
+    size += 2 * 2
 
-        console.log(tilesetHeaderSize)
-        console.log(tilesetSize)
+    // Tileset
+    const tileSize = options.colorMode ? 0x40 : 0x20
+    const tilesetHeaderSize = options.sprites.length * 4
+    const tilesetSize = options.tilesets.map(
+        v => v.map((i: { byteLength: any }) => i.byteLength).reduce((p: any, c: any) => p + c, 0)
+    ).map(v => (v / (options.colorMode ? 1 : 2)) | 0)
+        .reduce((p, c) => p + c, 0)
 
-        size += tilesetHeaderSize
-        size += tilesetSize
+    console.log(tilesetHeaderSize)
+    console.log(tilesetSize)
 
-        // Palettes
-        if (options.colorMode) {
-            size += 2 * 256
-        } else {
-            size += options.palettes.length * 16 * 2
-        }
+    size += tilesetHeaderSize
+    size += tilesetSize
 
-        // Animations
-        const animationEntries = options.animations.length
-        const animationFrames = options.animations.reduce((p, c) => p + c.length, 0)
+    // Palettes
+    if (options.colorMode) {
+        size += 2 * 256
+    } else {
+        size += options.palettes.length * 16 * 2
+    }
 
-        console.log(animationEntries)
-        console.log(animationFrames)
+    // Animations
+    const animationEntries = options.animations.length
+    const animationFrames = options.animations.reduce((p, c) => p + c.length, 0)
 
-        size += animationEntries * 4
-        size += animationFrames * 4
+    console.log(animationEntries)
+    console.log(animationFrames)
 
-        // Sprites
-        const spriteEntries = options.sprites.length
-        const subsprites = options.sprites.reduce((p, c) => p + c.subsprites.length, 0)
+    size += animationEntries * 4
+    size += animationFrames * 4
 
-        console.log(spriteEntries)
-        console.log(subsprites)
+    // Sprites
+    const spriteEntries = options.sprites.length
+    const subsprites = options.sprites.reduce((p, c) => p + c.subsprites.length, 0)
 
-        size += spriteEntries * 4
-        size += subsprites * 8
+    console.log(spriteEntries)
+    console.log(subsprites)
 
-        // Start write data
-        console.log('共需要', size, '字节大小')
+    size += spriteEntries * 4
+    size += subsprites * 8
 
-        const result = new BufferReader(size)
+    // Start write data
+    console.log('共需要', size, '字节大小')
 
-        result.seek(4 * 4)
-        result.writeUint32(1)
+    const result = new BufferReader(size)
 
-        // Tileset Header
-        const tilesetHeaderPos = result.tell()
-        result.writeUint16(tilesetSize / tileSize | 0)
-        result.writeUint16(tilesetSize / tileSize | 0)
-        result.writeUint16(2 * 4 + tilesetHeaderSize)
-        result.writeUint16(0)
+    result.seek(4 * 4)
+    result.writeUint32(1)
 
-        const tilesetOffsets = []
-        const tilesetSizes = []
-        let tilesetOffset = 0
+    // Tileset Header
+    const tilesetHeaderPos = result.tell()
+    result.writeUint16(tilesetSize / tileSize | 0)
+    result.writeUint16(tilesetSize / tileSize | 0)
+    result.writeUint16(2 * 4 + tilesetHeaderSize)
+    result.writeUint16(0)
 
-        // Tileset
-        // 先写数据，记录每段位移
-        result.seek(tilesetHeaderPos + tilesetHeaderSize + 2 * 4)
-        for (const tileset of options.tilesets) {
-            for (const tile of tileset) {
-                if (options.colorMode) {
-                    result.writeBytes(tile)
-                } else {
-                    const transformed = []
-                    for (let i = 0; i < ((tile.length / 2) | 0); i++) {
-                        const a = tile[i * 2] & 0xF
-                        const b = tile[i * 2 + 1] & 0xF
-                        transformed.push((a | (b << 4)) & 0xFF)
-                    }
-                    result.writeBytes(new Uint8Array(transformed))
+    const tilesetOffsets = []
+    const tilesetSizes = []
+    let tilesetOffset = 0
+
+    // Tileset
+    // 先写数据，记录每段位移
+    result.seek(tilesetHeaderPos + tilesetHeaderSize + 2 * 4)
+    for (const tileset of options.tilesets) {
+        for (const tile of tileset) {
+            if (options.colorMode) {
+                result.writeBytes(tile)
+            } else {
+                const transformed = []
+                for (let i = 0; i < ((tile.length / 2) | 0); i++) {
+                    const a = tile[i * 2] & 0xF
+                    const b = tile[i * 2 + 1] & 0xF
+                    transformed.push((a | (b << 4)) & 0xFF)
                 }
-            }
-            tilesetSizes.push(tileset.length)
-            tilesetOffsets.push(tilesetOffset)
-            tilesetOffset += tileset.length
-        }
-        const paletteHeaderPos = result.tell()
-        result.seek(tilesetHeaderPos + 2 * 4)
-        // 再写头信息
-        for (const sprite of options.sprites) {
-            result.writeUint16(tilesetSizes[sprite.tileSetID])
-            result.writeUint16(tilesetOffsets[sprite.tileSetID])
-        }
-        result.seek(paletteHeaderPos)
-
-        // Palette
-        if (options.colorMode) {
-            result.writeUint16(6)
-        } else {
-            result.writeUint16(5)
-        }
-        result.writeUint16(options.palettes.length)
-        for (const palette of options.palettes) {
-            for (const color of palette) {
-                result.writeGBAColor(color)
+                result.writeBytes(new Uint8Array(transformed))
             }
         }
+        tilesetSizes.push(tileset.length)
+        tilesetOffsets.push(tilesetOffset)
+        tilesetOffset += tileset.length
+    }
+    const paletteHeaderPos = result.tell()
+    result.seek(tilesetHeaderPos + 2 * 4)
+    // 再写头信息
+    for (const sprite of options.sprites) {
+        result.writeUint16(tilesetSizes[sprite.tileSetID])
+        result.writeUint16(tilesetOffsets[sprite.tileSetID])
+    }
+    result.seek(paletteHeaderPos)
 
-        // Animations
-        const animationHeaderPos = result.tell()
-        result.writeUint16(options.animations.length)
-        result.writeUint16(0)
-        const animationOffsets = []
+    // Palette
+    if (options.colorMode) {
+        result.writeUint16(6)
+    } else {
+        result.writeUint16(5)
+    }
+    result.writeUint16(options.palettes.length)
+    for (const palette of options.palettes) {
+        for (const color of palette) {
+            result.writeGBAColor(color)
+        }
+    }
 
-        result.seek(animationHeaderPos + 2 * 2 + options.animations.length * 4)
-        for (const frames of options.animations) {
-            animationOffsets.push(result.tell() - animationHeaderPos)
-            for (let i = 0; i < frames.length; i++) {
-                const frame = frames[i]
-                result.writeUint8(frame.spriteId)
-                result.writeUint8(frame.delay)
-                let loopFlag = 0
-                if (frame.isLoop) {
-                    loopFlag |= 0x40
-                }
-                if (i === frames.length - 1) {
-                    loopFlag |= 0xC0
-                }
-                result.writeUint8(loopFlag)
-                result.writeUint8(frame.palette)
+    // Animations
+    const animationHeaderPos = result.tell()
+    result.writeUint16(options.animations.length)
+    result.writeUint16(0)
+    const animationOffsets = []
+
+    result.seek(animationHeaderPos + 2 * 2 + options.animations.length * 4)
+    for (const frames of options.animations) {
+        animationOffsets.push(result.tell() - animationHeaderPos)
+        for (let i = 0; i < frames.length; i++) {
+            const frame = frames[i]
+            result.writeUint8(frame.spriteId)
+            result.writeUint8(frame.delay)
+            let loopFlag = 0
+            if (frame.isLoop) {
+                loopFlag |= 0x40
             }
-        }
-        const spritesHeaderPos = result.tell()
-        result.seek(animationHeaderPos + 2 * 2)
-        for (const offset of animationOffsets) {
-            result.writeUint32(offset)
-        }
-
-        // Sprites
-        result.seek(spritesHeaderPos)
-        result.writeUint16(options.sprites.length)
-        result.writeUint16(0)
-        const spritesOffsets = []
-        const tileNumShift = options.colorMode ? 0 : 1;
-
-        result.seek(spritesHeaderPos + 2 * 2 + options.sprites.length * 4)
-        for (const subsprites of options.sprites) {
-            spritesOffsets.push(result.tell() - spritesHeaderPos)
-            for (let i = 0; i < subsprites.subsprites.length; i++) {
-                const subsprite = subsprites.subsprites[i]
-                const objSize = getObjSizeCode(subsprite.size)
-                result.writeUint8((subsprite.startTile >>> tileNumShift) & 0xFF)
-                result.writeInt8(subsprite.position.x)
-                result.writeInt8(subsprite.position.y)
-                result.writeUint8(objSize.size)
-                result.writeUint8(objSize.shape)
-                let flip = 0
-                flip = flip | (subsprite.flip.h ? 0x1 : 0)
-                flip = flip | (subsprite.flip.v ? 0x2 : 0)
-                result.writeUint8(flip)
-                result.writeUint8((i === subsprites.subsprites.length - 1) ? 1 : 0)
-                const upper = (subsprite.startTile >>> (8 + tileNumShift)) & 0xFF
-                result.writeUint8(upper)
+            if (i === frames.length - 1) {
+                loopFlag |= 0xC0
             }
+            result.writeUint8(loopFlag)
+            result.writeUint8(frame.palette)
         }
-        result.seek(spritesHeaderPos + 2 * 2)
-        for (const offset of spritesOffsets) {
-            result.writeUint32(offset)
+    }
+    const spritesHeaderPos = result.tell()
+    result.seek(animationHeaderPos + 2 * 2)
+    for (const offset of animationOffsets) {
+        result.writeUint32(offset)
+    }
+
+    // Sprites
+    result.seek(spritesHeaderPos)
+    result.writeUint16(options.sprites.length)
+    result.writeUint16(0)
+    const spritesOffsets = []
+    const tileNumShift = options.colorMode ? 0 : 1;
+
+    result.seek(spritesHeaderPos + 2 * 2 + options.sprites.length * 4)
+    for (const subsprites of options.sprites) {
+        spritesOffsets.push(result.tell() - spritesHeaderPos)
+        for (let i = 0; i < subsprites.subsprites.length; i++) {
+            const subsprite = subsprites.subsprites[i]
+            const objSize = getObjSizeCode(subsprite.size)
+            result.writeUint8((subsprite.startTile >>> tileNumShift) & 0xFF)
+            result.writeInt8(subsprite.position.x)
+            result.writeInt8(subsprite.position.y)
+            result.writeUint8(objSize.size)
+            result.writeUint8(objSize.shape)
+            let flip = 0
+            flip = flip | (subsprite.flip.h ? 0x1 : 0)
+            flip = flip | (subsprite.flip.v ? 0x2 : 0)
+            result.writeUint8(flip)
+            result.writeUint8((i === subsprites.subsprites.length - 1) ? 1 : 0)
+            const upper = (subsprite.startTile >>> (8 + tileNumShift)) & 0xFF
+            result.writeUint8(upper)
         }
+    }
+    result.seek(spritesHeaderPos + 2 * 2)
+    for (const offset of spritesOffsets) {
+        result.writeUint32(offset)
+    }
 
-        // 回到开头写入各数据位移
-        result.seek(0)
-        result.writeUint32(tilesetHeaderPos)
-        result.writeUint32(paletteHeaderPos)
-        result.writeUint32(animationHeaderPos)
-        result.writeUint32(spritesHeaderPos)
-        result.writeUint32(1)
+    // 回到开头写入各数据位移
+    result.seek(0)
+    result.writeUint32(tilesetHeaderPos)
+    result.writeUint32(paletteHeaderPos)
+    result.writeUint32(animationHeaderPos)
+    result.writeUint32(spritesHeaderPos)
+    result.writeUint32(1)
 
-        return result.buffer
+    return result.buffer
 }
 
 
@@ -504,7 +605,7 @@ class SFSprite {
 
         // console.log('Reading SFSprite')
         if (data.byteLength < 4 * 5) {
-            throw new ReadError(`头部信息太小`)
+            throw new HeaderTooSmallReadError(data.byteLength)
         }
         const tilesetHeader = data.readUint32()
         const paletteHeader = data.readUint32()
@@ -515,28 +616,28 @@ class SFSprite {
         // console.log(data.byteLength, tilesetHeader, paletteHeader, animationHeader, spriteHeader, startTileShift)
 
         if (tilesetHeader > data.byteLength) {
-            throw new ReadError('所读取的图块表地址超出了所读文件的大小范围')
+            throw new TilesetsHeaderOverflowReadError(data.byteLength, tilesetHeader)
         }
         if (paletteHeader > data.byteLength) {
-            throw new ReadError('所读取的调色板地址超出了所读文件的大小范围')
+            throw new PalettesHeaderOverflowReadError(data.byteLength, paletteHeader)
         }
         if (animationHeader > data.byteLength) {
-            throw new ReadError('所读取的动画地址超出了所读文件的大小范围')
+            throw new AnimationsHeaderOverflowReadError(data.byteLength, animationHeader)
         }
         if (spriteHeader > data.byteLength) {
-            throw new ReadError('所读取的精灵表地址超出了所读文件的大小范围')
+            throw new SpritesHeaderOverflowReadError(data.byteLength, spriteHeader)
         }
 
         // Palettes
         data.seek(paletteHeader)
         if (data.byteLength < tilesetHeader + 2 * 2) {
-            throw new ReadError(`调色板元数据超出了文件大小`)
+            throw new PalettesAddressOverflowReadError(data.byteLength, tilesetHeader + 2 * 2)
         }
         const colorDepth = data.readUint16()
         const paletteCountMax = data.readUint16()
         // console.log('PaletteHeader', colorDepth, paletteHeader)
         if (colorDepth != 5 && colorDepth != 6) {
-            throw new ReadError('不支持该颜色模式 ' + colorDepth)
+            throw new UnsupportedColorModeReadError(colorDepth)
         }
         const paletteSize = colorDepth == 5 ? 16 : colorDepth == 6 ? 256 : 0
         const tileSize = colorDepth == 5 ? 0x20 : colorDepth == 6 ? 0x40 : 0
@@ -570,8 +671,8 @@ class SFSprite {
 
         // Sprites
         data.seek(spriteHeader)
-        if (data.byteLength < tilesetHeader + 2 * 2) {
-            throw new ReadError(`精灵元数据超出了文件大小`)
+        if (data.byteLength < spriteHeader + 2 * 2) {
+            throw new SpritesAddressOverflowReadError(data.byteLength, tilesetHeader + 2 * 2)
         }
         this.sprites = []
         const totalSprites = data.readUint16()
@@ -587,7 +688,7 @@ class SFSprite {
             // subsprites
             while (true) {
                 if (data.tell() >= data.byteLength) {
-                    throw new ReadError(`${subsprites.length} 号子精灵没有最后一个的标注，无法解读`)
+                    throw new NoLastSubspriteMarkReadError(subsprites.length)
                 }
                 const startTile = data.readUint8() << tileNumberShift & 0xFFFF
                 const spriteObj: SubSprite = {
@@ -628,7 +729,7 @@ class SFSprite {
         // Tileset
         data.seek(tilesetHeader)
         if (data.byteLength < tilesetHeader + 2 * 4) {
-            throw new ReadError(`图块集元数据超出了文件大小`)
+            throw new TilesetsAddressOverflowReadError(data.byteLength, tilesetHeader + 2 * 4)
         }
         this.maxTiles = data.readUint16()
         const totalTiles = data.readUint16()
@@ -641,7 +742,7 @@ class SFSprite {
         // console.log('共计', totalSprites, '个图块集')
         for (let i = 0; i < totalSprites; i++) {
             if (data.byteLength < data.tell() + 4) {
-                throw new ReadError(`图块集 ${i} 头数据到达结尾`)
+                throw new TilesetsEOFReadError(i, data.byteLength, data.tell())
             }
             const tileCount = data.readUint16()
             const tileNum = data.readUint16()
@@ -657,10 +758,10 @@ class SFSprite {
                 const curPos = data.tell()
                 const tilesetPos = tilesetHeader + tilesetHeaderSize + tileNum * tileSize
                 if (data.byteLength < tilesetPos) {
-                    throw new ReadError(`图块集 ${i} 所指向的图像位置 ${tilesetPos.toString(16)} 超出了文件大小 ${data.byteLength.toString(16)}`)
+                    throw new TilesetsWrongPositionReadError(`图块集 ${i} 所指向的图像位置 ${tilesetPos.toString(16)} 超出了文件大小 ${data.byteLength.toString(16)}`)
                 }
                 if (data.byteLength < tilesetPos + tileSize * tileCount) {
-                    throw new ReadError(`图块集 ${i} 所指向的图像数据量 ${(tilesetPos + tileSize * tileCount).toString(16)} 超出了文件大小 ${data.byteLength.toString(16)}`)
+                    throw new TilesetsWrongSizeReadError(`图块集 ${i} 所指向的图像数据量 ${(tilesetPos + tileSize * tileCount).toString(16)} 超出了文件大小 ${data.byteLength.toString(16)}`)
                 }
                 // console.log('图块集', i, '共计', tileCount, '个图块', tileNum, tilesetHeader + tilesetHeaderSize + tileNum * tileSize)
                 data.seek(tilesetPos)
@@ -904,6 +1005,5 @@ class SFSprite {
 }
 
 export {
-    ReadError,
     SFSprite
 }

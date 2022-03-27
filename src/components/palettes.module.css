@@ -1,9 +1,0 @@
-.palettes {
-    display: flex;
-    flex-direction: row;
-}
-
-.palette {
-    width: 16px;
-    height: 16px;
-}

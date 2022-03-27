@@ -1,3 +1,30 @@
+.file-page {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.file-list {
+    flex: 1;
+    overflow-y: scroll;
+}
+
+.file-list > button {
+    display: block;
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    padding: 0.5rem;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+    cursor: pointer;
+}
+
+.file-list > button:hover {
+    background-color: #eee;
+}
+
 .file-buttons {
     display: grid;
     grid-auto-rows: 1fr;

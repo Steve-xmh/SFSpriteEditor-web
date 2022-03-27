@@ -110,5 +110,81 @@
   },
   "tab.palettes": {
     "defaultMessage": "调色板"
+  },
+  "about.credits.bnspriteeditor": {
+    "defaultMessage": "BNSpriteEditor"
+  },
+  "about.credits.prof9": {
+    "defaultMessage": "Prof.9"
+  },
+  "about.credits.prof9-sprite-file-struct": {
+    "defaultMessage": "Prof.9 的精灵文件结构描述"
+  },
+  "about.credits.title": {
+    "defaultMessage": "鸣谢"
+  },
+  "about.credits.topic-of-bnspriteeditor": {
+    "defaultMessage": "BNSpriteEditor 的发布贴"
+  },
+  "tab.tilesets": {
+    "defaultMessage": "图块集"
+  },
+  "palettes.new-palette": {
+    "defaultMessage": "新的调色板"
+  },
+  "palettes.toggle-color-mode": {
+    "defaultMessage": "切换颜色模式"
+  },
+  "error.read-error.animations-header-overflow": {
+    "defaultMessage": "所读取的动画地址 {address} 超出了所读文件的大小 {fileSize}"
+  },
+  "error.read-error.header-too-small": {
+    "defaultMessage": "头部信息太小"
+  },
+  "error.read-error.no-last-subsprite-mark": {
+    "defaultMessage": "{spriteId} 号子精灵没有最后一个的标注"
+  },
+  "error.read-error.palettes-address-overflow": {
+    "defaultMessage": "调色板元数据位置 {address} 超出了文件大小 {fileSize}"
+  },
+  "error.read-error.palettes-header-overflow": {
+    "defaultMessage": "所读取的调色板地址 {address} 超出了所读文件的大小 {fileSize}"
+  },
+  "error.read-error.sprites-address-overflow": {
+    "defaultMessage": "精灵元数据地址 {address} 超出了文件大小 {fileSize}"
+  },
+  "error.read-error.sprites-header-overflow": {
+    "defaultMessage": "所读取的精灵表地址 {address} 超出了所读文件的大小 {fileSize}"
+  },
+  "error.read-error.tilesets-address-overflow": {
+    "defaultMessage": "图块集元数据地址 {address} 超出了所读文件的大小 {fileSize}"
+  },
+  "error.read-error.tilesets-eof": {
+    "defaultMessage": "读取位于 {address} 的图块集 {tilesetId} 时到达文件结尾 {fileSize}"
+  },
+  "error.read-error.tilesets-header-overflow": {
+    "defaultMessage": "图块集元数据地址 {address} 超出了文件大小 {fileSize}"
+  },
+  "error.read-error.tilesets-wrong-position": {
+    "defaultMessage": "图块集 {tilesetId} 所指向的图像位置 {address} 超出了文件大小 {fileSize}"
+  },
+  "error.read-error.tilesets-wrong-size": {
+    "defaultMessage": "位于 {address} 的 图块集 {tilesetId} 的图像大小 {fileSize} 超出了文件大小 {fileSize}"
+  },
+  "error.read-error.unknown": {
+    "defaultMessage": "未知错误：{error}"
+  },
+  "error.read-error.unsupported-color-mode": {
+    "defaultMessage": "不支持该颜色模式 {colorDepth}"
+  },
+  "loading.error-msg": {
+    "defaultMessage": "{amount, plural, =0 {没有文件} one {一个文件} two {两个文件} other {{amount} 个文件}}打开失败，点击其他地方关闭此提示选择其他已打开文件以继续编辑"
+  },
+  "loading.loading-msg": {
+    "defaultMessage": "加载中"
+  },
+  "file.closeall": {
+    "defaultMessage": "关闭全部文件",
+    "description": "A button that close all files"
   }
 }

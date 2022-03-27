@@ -4,9 +4,11 @@ import tab, {initialState as tabInitialState} from './tab'
 import editing, {initialState as editingInitialState} from './editing'
 import dialogs, {initialState as dialogsInitialState} from './dialogs'
 import options, {initialState as optionsInitialState} from './options'
+import files, {initialState as filesInitialState} from './files'
 
 export interface MainStore {
     tab: ReturnType<typeof tab>
+    files: ReturnType<typeof files>
     sprite: ReturnType<typeof sprite>
     editing: ReturnType<typeof editing>
     dialogs: ReturnType<typeof dialogs>
@@ -20,6 +22,7 @@ const initialState: MainStore = {
         future: [],
     },
     tab: tabInitialState,
+    files: filesInitialState,
     editing: editingInitialState,
     dialogs: dialogsInitialState,
     options: optionsInitialState
@@ -29,6 +32,7 @@ function mainReducer(state: MainStore = initialState, action: AnyAction): MainSt
     return {
         sprite: sprite(state.sprite, action),
         tab: tab(state.tab, action),
+        files: files(state.files, action),
         editing: editing(state.editing, action),
         dialogs: dialogs(state.dialogs, action),
         options: options(state.options, action)

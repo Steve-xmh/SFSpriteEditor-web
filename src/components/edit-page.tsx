@@ -9,9 +9,10 @@ import { getSprite } from "../reducers/sprite";
 import classname from "../utils/classname";
 import { Color } from "../utils/color";
 import { Sprite } from "../utils/sfsprite";
-import TextCanvas from "../utils/TextCanvas";
+import TextCanvas from "../utils/text-canvas";
 import styles from "./edit-page.module.css";
 import { SubSprite } from "./subsprite";
+import { SwitchPalettesDialogButton } from "./switch-palettes-dialog";
 
 export const PaletteColorSwitcher: FunctionComponent = props => {
     // const viewType = useSelector<MainStore, string>(state => state.editing.viewType);
@@ -42,9 +43,7 @@ export const PaletteColorSwitcher: FunctionComponent = props => {
                 )
             }
         </div>
-        <button onClick={() => dispatch(openDialog('switchPreviewPalette'))}>
-            <FormattedMessage id='edit.switch-preview-palette' defaultMessage='Switch Preview Palette' />
-        </button>
+        <SwitchPalettesDialogButton />
     </div>
 }
 

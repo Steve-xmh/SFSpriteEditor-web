@@ -11,7 +11,7 @@ import gridImage from "../utils/grid-image"
 import { line } from "../utils/line"
 import { ActionCreators } from "redux-undo"
 import { getCurrentTab } from "../reducers/tab"
-import TextCanvas from "../utils/TextCanvas"
+import TextCanvas from "../utils/text-canvas"
 import { getOption } from "../reducers/options"
 import { MainStore } from "../reducers"
 
