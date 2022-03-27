@@ -5,6 +5,7 @@ import editing, {initialState as editingInitialState} from './editing'
 import dialogs, {initialState as dialogsInitialState} from './dialogs'
 import options, {initialState as optionsInitialState} from './options'
 import files, {initialState as filesInitialState} from './files'
+import pwa, {initialState as pwaInitialState} from './pwa'
 
 export interface MainStore {
     tab: ReturnType<typeof tab>
@@ -13,6 +14,7 @@ export interface MainStore {
     editing: ReturnType<typeof editing>
     dialogs: ReturnType<typeof dialogs>
     options: ReturnType<typeof options>
+    pwa: ReturnType<typeof pwa>
 }
 
 const initialState: MainStore = {
@@ -25,7 +27,8 @@ const initialState: MainStore = {
     files: filesInitialState,
     editing: editingInitialState,
     dialogs: dialogsInitialState,
-    options: optionsInitialState
+    options: optionsInitialState,
+    pwa: pwaInitialState
 }
 
 function mainReducer(state: MainStore = initialState, action: AnyAction): MainStore {
@@ -35,7 +38,8 @@ function mainReducer(state: MainStore = initialState, action: AnyAction): MainSt
         files: files(state.files, action),
         editing: editing(state.editing, action),
         dialogs: dialogs(state.dialogs, action),
-        options: options(state.options, action)
+        options: options(state.options, action),
+        pwa: pwa(state.pwa, action),
     }
 }
 

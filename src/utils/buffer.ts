@@ -4,12 +4,8 @@ export class BufferReader extends Uint8Array {
     private _cursor: number
     private _view: DataView
     constructor(data: ArrayBufferLike | number, start?: number, length?: number) {
-        if (typeof data === 'number') {
-            super(data)
-        } else {
-            super(data, start, length)
-        }
-            this._cursor = 0
+        super(data as any, start, length)
+        this._cursor = 0
         this._view = new DataView(this.buffer)
     }
     seek(position = 0, offset = 0) {

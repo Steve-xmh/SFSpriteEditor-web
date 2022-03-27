@@ -1,10 +1,22 @@
 import { FunctionComponent } from "preact";
 import { FormattedMessage } from "react-intl";
+import { useSelector } from "react-redux";
+import { getUpdateSW, isRefreshNeeded } from "../reducers/pwa";
 
 export const AboutPage: FunctionComponent = () => {
-    return <>
+    const needRefresh = useSelector(isRefreshNeeded)
+    const updateSW = useSelector(getUpdateSW)
+    return <div style={{ margin: '1rem' }}>
         <h4>SFSpriteEditor Web</h4>
         <h5>By SteveXMH</h5>
+        {
+            needRefresh && <div>
+                <FormattedMessage id="pwa.needrefresh" defaultMessage="Editor has updated!" />
+                <button onClick={() => updateSW()}>
+                    <FormattedMessage id="pwa.refresh" defaultMessage="Click to refresh and update" />
+                </button>
+            </div>
+        }
         <a href="https://github.com/Steve-xmh/SFSpriteEditor-web">Github</a>
         <h3><FormattedMessage id='about.credits.title' defaultMessage="Credits"/></h3>
         <ul>
@@ -29,5 +41,5 @@ export const AboutPage: FunctionComponent = () => {
                 </a>
             </li>
         </ul>
-    </>
+    </div>
 }

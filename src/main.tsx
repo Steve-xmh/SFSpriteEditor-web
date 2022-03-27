@@ -10,7 +10,6 @@ import { getLanguage } from './reducers/options'
 
 const AppHOC = () => {
     const lang = useSelector(getLanguage)
-    console.log('msgs', messages[lang])
     return <IntlProvider messages={messages[lang]} locale={lang} defaultLocale='en'>
         <App />
     </IntlProvider>

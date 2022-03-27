@@ -124,7 +124,7 @@ function getObjSize(objSize: number, objShape: number) {
         case 0x30: return { x: 64, y: 64 }
         case 0x31: return { x: 64, y: 32 }
         case 0x32: return { x: 32, y: 64 }
-        default: throw new Error('非法的大小和形状值')
+        default: throw new Error('Invalid obj size')
     }
 }
 
@@ -141,7 +141,7 @@ function getObjSizeCode(objSize: { x: number; y: number }) {
     if (objSize.x == 64 && objSize.y == 64) return { size: 3, shape: 0, }
     if (objSize.x == 64 && objSize.y == 32) return { size: 3, shape: 1, }
     if (objSize.x == 32 && objSize.y == 64) return { size: 3, shape: 2, }
-    throw new Error('非法的大小和形状值')
+    throw new Error('Invalid obj size')
 }
 
 export function getSpriteBound(subsprites: SubSprite[]) {
@@ -287,9 +287,6 @@ export function writeSpriteToBuffer(options: WriteOption) {
 
     size += spriteEntries * 4
     size += subsprites * 8
-
-    // Start write data
-    console.log('共需要', size, '字节大小')
 
     const result = new BufferReader(size)
 
@@ -600,8 +597,6 @@ class SFSprite {
      * @param {import("./buffer").BufferReader} data 
      */
     loadFromFileBuffer(data: import("./buffer").BufferReader) {
-
-        console.log('读取文件大小', data.byteLength)
 
         this._spriteCache = new Map()
 

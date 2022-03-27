@@ -26,6 +26,7 @@ import { useIntl } from 'react-intl'
 import { TilsetsPage } from './components/tilesets-page'
 import { LoadingDialog } from './components/loading-dialog'
 import { registerSW } from 'virtual:pwa-register'
+import { needRefresh, setUpdateSW } from './reducers/pwa'
 
 export function App() {
   const dispatch = useDispatch()
@@ -38,7 +39,16 @@ export function App() {
     )
   }
   useEffect(() => {
-
+    const updateSW = registerSW({
+      onNeedRefresh: () => {
+        dispatch(setUpdateSW(updateSW))
+        dispatch(needRefresh())
+        dispatch(setTab('about'))
+      },
+      onOfflineReady: () => {
+        dispatch(setUpdateSW(updateSW))
+      }
+    })
   }, [])
   return (
     <div className={styles.app}>
