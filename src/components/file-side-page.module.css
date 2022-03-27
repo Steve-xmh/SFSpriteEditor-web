@@ -5,14 +5,31 @@
     height: 100%;
 }
 
+.file-list > div {
+    display: grid;
+    grid-template-columns: auto 2rem;
+}
+
 .file-list {
     flex: 1;
+    border-top: 1px solid #ccc;
     overflow-y: scroll;
 }
 
-.file-list > button {
-    display: block;
+.close-file-button {
+    width: 2rem;
+    height: 100%;
+    padding: 0;
+}
+
+.close-file-button > img {
     width: 100%;
+    height: 100%;
+    object-fit: scale-down;
+    object-position: center;
+}
+
+.file-list > div > button {
     border: none;
     background-color: transparent;
     padding: 0.5rem;
@@ -21,7 +38,24 @@
     cursor: pointer;
 }
 
-.file-list > button:hover {
+.open-file-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+}
+
+.open-file-button > img {
+    width: 3rem;
+    object-fit: scale-down;
+    object-position: center;
+}
+
+.open-file-button > div {
+    flex: 1;
+}
+
+.file-list > div > button:hover {
     background-color: #eee;
 }
 

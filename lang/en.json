@@ -3,10 +3,10 @@
     "defaultMessage": "BNSpriteEditor"
   },
   "about.credits.prof9": {
-    "defaultMessage": "Prof.9"
+    "defaultMessage": "Prof. 9"
   },
   "about.credits.prof9-sprite-file-struct": {
-    "defaultMessage": "Prof.9's description of Sprite File Structure"
+    "defaultMessage": "Prof. 9's description of Sprite File Structure"
   },
   "about.credits.title": {
     "defaultMessage": "Credits"
@@ -117,10 +117,10 @@
     "defaultMessage": "Tilesets header position {address} overflowed with file size {fileSize}"
   },
   "error.read-error.tilesets-wrong-position": {
-    "defaultMessage": "Tilesets at {address} is not at the expected position and file size is {fileSize}"
+    "defaultMessage": "Tileset {tilesetId} at {address} is not at the expected position and file size is {fileSize}"
   },
   "error.read-error.tilesets-wrong-size": {
-    "defaultMessage": "Size of tilesets at {address} is incorrect ({size}) and file size is {fileSize}"
+    "defaultMessage": "Size of tileset {tilesetId} at {address} is incorrect ({size}) and file size is {fileSize}"
   },
   "error.read-error.unknown": {
     "defaultMessage": "Unknown error: {error}"
@@ -153,6 +153,12 @@
   },
   "loading.loading-msg": {
     "defaultMessage": "Loading"
+  },
+  "options.display-debug-message": {
+    "defaultMessage": "Display Debug Messages"
+  },
+  "options.display-subsprite-bounds": {
+    "defaultMessage": "Display Subsprite bounds"
   },
   "options.language": {
     "defaultMessage": "Display Language"

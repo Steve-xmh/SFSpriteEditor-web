@@ -28,7 +28,6 @@ export const EditorCanvas: FunctionComponent = () => {
     const previewTransparent = useSelector(isPreviewTransparent)
     const sprite = useSelector(getSprite)
     const textToolText = useSelector(getTextToolText)
-    const showSubspritesBound = useSelector((state: MainStore) => getOption(state, 'showSubSpriteBounds'))
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
     const [canvasView, setCanvasView] = useState({
         x: 0,
@@ -36,9 +35,19 @@ export const EditorCanvas: FunctionComponent = () => {
         scale: 10,
     })
     const [previewPixels, setPreviewPixels] = useState(new Set<[number, number]>())
-
+    const displayDebugMessages = useSelector(getOption('displayDebugMessages'))
+    const showSubSpriteBounds = useSelector(getOption('showSubSpriteBounds'))
     const usingTool = useSelector(getCurrentTool)
     const canvasRef = useRef<HTMLCanvasElement>()
+    const tempCanvasRef = useRef<HTMLCanvasElement>(null)
+    useEffect(() => {
+        tempCanvasRef.current = document.createElement('canvas')
+        tempCanvasRef.current.width = 256
+        tempCanvasRef.current.height = 256
+        return () => {
+            tempCanvasRef.current.remove()
+        }
+    }, [])
     function getTarget(mousePosX?: number, mousePosY?: number) {
         if (canvasRef.current) {
             const offsetX = (((canvasRef.current.width - 256) / 2) | 0) + canvasView.x
@@ -207,7 +216,12 @@ export const EditorCanvas: FunctionComponent = () => {
             const targetPos = getTarget(evt.clientX - evt.currentTarget.offsetLeft, evt.clientY - evt.currentTarget.offsetTop)
             toolTempRef.current = {
                 x: targetPos.x,
-                y: targetPos.y
+                y: targetPos.y,
+                originPos: {
+                    x: 0,
+                    y: 0
+                },
+                movingSubsprite: null
             }
         } else if (usingTool === Tools.MoveSubsprite) {
             if (hitTestResult) {
@@ -404,8 +418,6 @@ export const EditorCanvas: FunctionComponent = () => {
             ctx.imageSmoothingEnabled = false
             ctx.resetTransform()
             ctx.clearRect(0, 0, canvas.width, canvas.height)
-            ctx.strokeStyle = '#f00'
-            ctx.strokeRect(4, 4, canvas.width - 8, canvas.height - 8)
             ctx.fillStyle = gridImg
             ctx.lineWidth = 1
             // Draw a rect 256x256 in center of canvas
@@ -414,6 +426,7 @@ export const EditorCanvas: FunctionComponent = () => {
 
             let debugLine = 10
             function printDebug(text: string) {
+                if (!displayDebugMessages) return
                 const lastFillStyle = ctx.fillStyle
                 const len = ctx.measureText(text)
                 ctx.fillStyle = '#FFFA'
@@ -456,20 +469,29 @@ export const EditorCanvas: FunctionComponent = () => {
                             const s = sprite.sprites[viewId]
                             const t = sprite.tilesets[s.tileSetID]
                             const p = sprite.palettes[previewPalette] || sprite.palettes[0]
-                            renderSprite({
-                                sprite: s,
-                                tileset: t,
-                                palette: p,
-                                blacklist: hiddenSubsprites,
-                                transparent: !previewTransparent,
-                                putPixelCallback: (x, y, color) => {
-                                    ctx.fillStyle = `rgb(${color[0]}, ${color[1]}, ${color[2]})`
-                                    ctx.fillRect(x, y, 1, 1)
-                                }
-                            })
+                            if (tempCanvasRef.current) {
+                                const tempCtx = tempCanvasRef.current.getContext('2d')
+                                const imageData = tempCtx.createImageData(256, 256)
+                                renderSprite({
+                                    sprite: s,
+                                    tileset: t,
+                                    palette: p,
+                                    blacklist: hiddenSubsprites,
+                                    transparent: !previewTransparent,
+                                    putPixelCallback: (x, y, color) => {
+                                        const i = ((x + 127) + (y + 127) * 256) * 4
+                                        imageData.data[i] = color[0]
+                                        imageData.data[i + 1] = color[1]
+                                        imageData.data[i + 2] = color[2]
+                                        imageData.data[i + 3] = 255
+                                    }
+                                })
+                                tempCtx.putImageData(imageData, 0, 0)
+                                ctx.drawImage(tempCanvasRef.current, -127, -127)
+                            }
                             ctx.lineWidth = 1 / scale
                             ctx.strokeStyle = '#F00'
-                            if (showSubspritesBound) {
+                            if (showSubSpriteBounds) {
                                 for (const [i, subsprite] of s.subsprites.entries()) {
                                     if (hiddenSubsprites.has(i)) continue
                                     ctx.strokeRect(subsprite.position.x, subsprite.position.y, subsprite.size.x, subsprite.size.y)
@@ -649,7 +671,18 @@ export const EditorCanvas: FunctionComponent = () => {
     }, [canvasRef.current, currentTab])
     useEffect(() => {
         onRedraw()
-    }, [canvasRef.current, viewType, viewId, sprite, canvasView, mousePos, previewPalette, hiddenSubsprites, previewTransparent])
+    }, [canvasRef.current,
+        viewType,
+        viewId,
+        sprite,
+        canvasView,
+        mousePos,
+        previewPalette,
+        hiddenSubsprites,
+        previewTransparent,
+        displayDebugMessages,
+        showSubSpriteBounds
+    ])
     useEffect(() => {
         window.addEventListener('resize', onResize)
         window.addEventListener('keypress', onGlobalKeyPress)

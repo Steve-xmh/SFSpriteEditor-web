@@ -115,10 +115,10 @@
     "defaultMessage": "BNSpriteEditor"
   },
   "about.credits.prof9": {
-    "defaultMessage": "Prof.9"
+    "defaultMessage": "Prof. 9"
   },
   "about.credits.prof9-sprite-file-struct": {
-    "defaultMessage": "Prof.9 的精灵文件结构描述"
+    "defaultMessage": "Prof. 9 的精灵文件结构描述"
   },
   "about.credits.title": {
     "defaultMessage": "鸣谢"
@@ -186,5 +186,11 @@
   "file.closeall": {
     "defaultMessage": "关闭全部文件",
     "description": "A button that close all files"
+  },
+  "options.display-debug-message": {
+    "defaultMessage": "显示调试信息"
+  },
+  "options.display-subsprite-bounds": {
+    "defaultMessage": "显示子精灵边界"
   }
 }

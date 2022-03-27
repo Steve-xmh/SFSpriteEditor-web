@@ -2,12 +2,14 @@ import { FunctionComponent } from "preact";
 import { FormattedDisplayName, FormattedMessage } from "react-intl";
 import { useDispatch, useSelector } from "react-redux"
 import { MainStore } from "../reducers";
-import { getLanguage, setLanguage } from "../reducers/options";
+import { getLanguage, getOption, setLanguage, toggleOption } from "../reducers/options";
 import lang from "../utils/lang";
 
 export const OptionsPage: FunctionComponent = () => {
     const dispatch = useDispatch()
     const currentLanguage = useSelector(getLanguage)
+    const displayDebugMessages = useSelector(getOption('displayDebugMessages'))
+    const showSubSpriteBounds = useSelector(getOption('showSubSpriteBounds'))
     return <>
         <div>OptionsPage</div>
         <div>
@@ -19,6 +21,14 @@ export const OptionsPage: FunctionComponent = () => {
                     </option>)
                 }
             </select>
+        </div>
+        <div>
+            <label><FormattedMessage id="options.display-debug-message" defaultMessage='Display Debug Messages' /></label>
+            <input type='checkbox' checked={displayDebugMessages} onClick={() => dispatch(toggleOption('displayDebugMessages'))} />
+        </div>
+        <div>
+            <label><FormattedMessage id="options.display-subsprite-bounds" defaultMessage='Display Subsprite bounds' /></label>
+            <input type='checkbox' checked={showSubSpriteBounds} onClick={() => dispatch(toggleOption('showSubSpriteBounds'))} />
         </div>
     </>;
 };

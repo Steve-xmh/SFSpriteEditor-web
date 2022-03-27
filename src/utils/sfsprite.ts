@@ -81,6 +81,7 @@ export class TilesetsEOFReadError extends SFSpriteReadError {
 }
 export class TilesetsWrongPositionReadError extends SFSpriteReadError {
     constructor(
+        public readonly tilesetId: number,
         public readonly fileSize: number,
         public readonly address: number
     ) {
@@ -89,6 +90,7 @@ export class TilesetsWrongPositionReadError extends SFSpriteReadError {
 }
 export class TilesetsWrongSizeReadError extends SFSpriteReadError {
     constructor(
+        public readonly tilesetId: number,
         public readonly fileSize: number,
         public readonly address: number,
         public readonly size: number
@@ -197,7 +199,7 @@ export function renderSprite({
     palette = [] as Color[],
     transparent = true,
     blacklist = new Set(),
-    putPixelCallback = null
+    putPixelCallback = null as (x: number, y: number, color: Color) => void
 }) {
     let index = 0
     for (const subsprite of sprite.subsprites) {
@@ -758,10 +760,10 @@ class SFSprite {
                 const curPos = data.tell()
                 const tilesetPos = tilesetHeader + tilesetHeaderSize + tileNum * tileSize
                 if (data.byteLength < tilesetPos) {
-                    throw new TilesetsWrongPositionReadError(`图块集 ${i} 所指向的图像位置 ${tilesetPos.toString(16)} 超出了文件大小 ${data.byteLength.toString(16)}`)
+                    throw new TilesetsWrongPositionReadError(i, data.byteLength, tilesetPos)
                 }
                 if (data.byteLength < tilesetPos + tileSize * tileCount) {
-                    throw new TilesetsWrongSizeReadError(`图块集 ${i} 所指向的图像数据量 ${(tilesetPos + tileSize * tileCount).toString(16)} 超出了文件大小 ${data.byteLength.toString(16)}`)
+                    throw new TilesetsWrongSizeReadError(i, data.byteLength, tilesetPos, tileSize * tileCount)
                 }
                 // console.log('图块集', i, '共计', tileCount, '个图块', tileNum, tilesetHeader + tilesetHeaderSize + tileNum * tileSize)
                 data.seek(tilesetPos)

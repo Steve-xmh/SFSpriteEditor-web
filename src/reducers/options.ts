@@ -3,12 +3,14 @@ import lang from '../utils/lang'
 import { MainStore } from './index'
 
 export interface Options {
+    displayDebugMessages: boolean
     showSubSpriteBounds: boolean
     showPixelGrid: boolean
     lang: string
 }
 
 export const defaultOptions: Options = {
+    displayDebugMessages: false,
     showSubSpriteBounds: false,
     showPixelGrid: false,
     lang: navigator.language in lang ? navigator.language : 'en'
@@ -32,7 +34,7 @@ function saveOptions(options: Options): Options {
     return options
 }
 
-export const initialState: Options = Object.assign({}, loadOptions(), defaultOptions)
+export const initialState: Options = Object.assign({}, defaultOptions, loadOptions())
 
 export const SET_OPTION = 'options/SET_OPTION'
 export const TOGGLE_OPTION = 'options/TOGGLE_OPTION'
@@ -60,13 +62,22 @@ function reducer(state = initialState, action: AnyAction): Options {
     }
 }
 
-export const setLanguage = (id: string) => ({
+export const setLanguage = <K extends keyof typeof lang>(id: K | string) => ({
     type: SWITCH_LANGUAGE,
     id
 })
+export const toggleOption = <K extends keyof Options>(id: K) => ({
+    type: TOGGLE_OPTION,
+    id
+})
+export const setOption = <K extends keyof Options>(id: K, value: Options[K]) => ({
+    type: SET_OPTION,
+    id,
+    value
+})
 
 export const getLanguage = (state: MainStore) => state.options.lang
-export const getOption = <K extends keyof Options>(state: MainStore, id: K): Options[K] => state.options[id]
+export const getOption = <K extends keyof Options>(id: K) => (state: MainStore): Options[K] => state.options[id]
 
 
 export default reducer

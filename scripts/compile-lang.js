@@ -5,6 +5,7 @@ const path = require('path');
 const cwd = path.resolve(__dirname, '..')
 
 function dumpLang() {
+    console.log('Dumping lang');
     const yarn = child_process.spawnSync('yarn', ['extract', 'src/**/*.ts*', '--ignore="**/*.d.ts"', '--out-file', 'lang/en.json'], { cwd, shell: true, stdio: 'pipe' });
     if (yarn.error) {
         const npm = child_process.spawnSync('npm', ['run', 'extract', 'src/**/*.ts*', '--ignore="**/*.d.ts"', '--out-file', 'lang/en.json'], { cwd, shell: true, stdio: 'pipe' });
@@ -25,6 +26,7 @@ function dumpLang() {
 }
 
 function mergeLang(fromFileName, toFileName) {
+    console.log('Merging lang: ' + fromFileName + ' to ' + toFileName);
     const from = path.resolve(cwd, 'lang', fromFileName);
     const to = path.resolve(cwd, 'lang', toFileName);
     const fromLang = JSON.parse(fs.readFileSync(from, 'utf8'));
@@ -48,6 +50,7 @@ function mergeLangs() {
 }
 
 function compileLang(langFileName) {
+    console.log('Compiling lang: ' + langFileName);
     const yarn = child_process.spawnSync('yarn', ['compile', 'lang/' + langFileName, '--ast', '--out-file', 'compiled-lang/' + langFileName], { cwd, shell: true, stdio: 'pipe' });
     if (yarn.error) {
         const npm = child_process.spawnSync('npm', ['run', 'compile', 'lang/' + langFileName, '--ast', '--out-file', 'compiled-lang/' + langFileName], { cwd, shell: true, stdio: 'pipe' });

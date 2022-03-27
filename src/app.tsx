@@ -1,5 +1,5 @@
 import styles from './app.module.css'
-import { useCallback } from 'preact/hooks'
+import { useCallback, useEffect } from 'preact/hooks'
 import { SidebarButton } from './components/sidebar-button'
 import { useDispatch, useSelector } from 'react-redux'
 import { getCurrentTab, setTab } from './reducers/tab'
@@ -25,6 +25,7 @@ import { OptionsPage } from './components/options-page'
 import { useIntl } from 'react-intl'
 import { TilsetsPage } from './components/tilesets-page'
 import { LoadingDialog } from './components/loading-dialog'
+import { registerSW } from 'virtual:pwa-register'
 
 export function App() {
   const dispatch = useDispatch()
@@ -36,6 +37,9 @@ export function App() {
       [dispatch]
     )
   }
+  useEffect(() => {
+
+  }, [])
   return (
     <div className={styles.app}>
       {/* Sidebar */}

@@ -48,11 +48,11 @@ const errorMessages = defineMessages({
     },
     10: {
         id: 'error.read-error.tilesets-wrong-position',
-        defaultMessage: 'Tilesets at {address} is not at the expected position and file size is {fileSize}',
+        defaultMessage: 'Tileset {tilesetId} at {address} is not at the expected position and file size is {fileSize}',
     },
     11: {
         id: 'error.read-error.tilesets-wrong-size',
-        defaultMessage: 'Size of tilesets at {address} is incorrect ({size}) and file size is {fileSize}',
+        defaultMessage: 'Size of tileset {tilesetId} at {address} is incorrect ({size}) and file size is {fileSize}',
     },
     12: {
         id: 'error.read-error.unsupported-color-mode',

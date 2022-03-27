@@ -4,6 +4,7 @@ import { SFSpriteReadError } from "../utils/sfsprite"
 import { initialState as SpriteInitialState } from "./sprite"
 export interface FileEntry {
     filename: string
+    previewUrl: string
     data: typeof SpriteInitialState
 }
 
@@ -62,9 +63,9 @@ function reducer(state = initialState, action: AnyAction): typeof initialState {
     }
 }
 
-export const addFile = (filename: string, data: typeof SpriteInitialState) => ({
+export const addFile = (filename: string, previewUrl: string, data: typeof SpriteInitialState) => ({
     type: ADD_FILE,
-    payload: { filename, data }
+    payload: { filename, data, previewUrl }
 })
 export const closeFile = (fileIndex: number) => ({
     type: CLOSE_FILE,
