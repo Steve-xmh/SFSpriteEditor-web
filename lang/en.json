@@ -90,7 +90,7 @@
     "defaultMessage": "Animations header position {address} overflowed with file size {fileSize}"
   },
   "error.read-error.header-too-small": {
-    "defaultMessage": "Header too small with file size {fileSize"
+    "defaultMessage": "Header too small with file size {fileSize}"
   },
   "error.read-error.no-last-subsprite-mark": {
     "defaultMessage": "Sprite {spriteId} has no last SubSprite mark"

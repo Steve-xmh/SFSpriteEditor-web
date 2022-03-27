@@ -12,7 +12,7 @@ const errorMessages = defineMessages({
     },
     1: {
         id: 'error.read-error.header-too-small',
-        defaultMessage: 'Header too small with file size {fileSize',
+        defaultMessage: 'Header too small with file size {fileSize}',
     },
     2: {
         id: 'error.read-error.tilesets-header-overflow',

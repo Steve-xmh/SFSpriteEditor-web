@@ -12,7 +12,15 @@ function dumpLang() {
             console.log(yarn.error);
             console.log(npm.error);
             throw new Error('Failed to extract lang');
+        } else if (npm.status !== 0) {
+            process.stdout.write(yarn.stdout);
+            process.stderr.write(yarn.stderr);
+            throw new Error('Failed to extract lang');
         }
+    } else if (yarn.status !== 0) {
+        process.stdout.write(yarn.stdout);
+        process.stderr.write(yarn.stderr);
+        throw new Error('Failed to extract lang');
     }
 }
 
@@ -47,13 +55,24 @@ function compileLang(langFileName) {
             console.log(yarn.error);
             console.log(npm.error);
             throw new Error('Failed to compile lang');
+        } else if (npm.status !== 0) {
+            process.stdout.write(yarn.stdout);
+            process.stderr.write(yarn.stderr);
+            throw new Error('Failed to compile lang');
         }
+    } else if (yarn.status !== 0) {
+        process.stdout.write(yarn.stdout);
+        process.stderr.write(yarn.stderr);
+        throw new Error('Failed to compile lang');
     }
 }
 
 function compileLangs() {
     const langDir = path.resolve(cwd, 'lang');
     const langs = fs.readdirSync(langDir);
+    if (!fs.existsSync(path.resolve(cwd, 'compiled-lang'))) {
+        fs.mkdirSync(path.resolve(cwd, 'compiled-lang'));
+    }
     langs.forEach(lang => {
         compileLang(lang);
     });
