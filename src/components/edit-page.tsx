@@ -1,28 +1,24 @@
-import { FunctionComponent } from "preact";
-import { useEffect, useRef, useState } from "preact/hooks";
-import { FormattedMessage, useIntl } from "react-intl";
-import { useDispatch, useSelector } from "react-redux";
-import { MainStore } from "../reducers";
-import { openDialog } from "../reducers/dialogs";
-import { getCurrentTool, getHiddenSubsprites, getId, getPreviewPalette, getTextToolText, getViewType, isPreviewTransparent, isSubspriteVisible, setTextToolText, switchColorIndex, switchTool, toggleHiddenSubsprite, togglePreviewTransparent, Tools } from "../reducers/editing";
-import { getSprite } from "../reducers/sprite";
-import classname from "../utils/classname";
-import { Color } from "../utils/color";
-import { Sprite } from "../utils/sfsprite";
-import TextCanvas from "../utils/text-canvas";
-import styles from "./edit-page.module.css";
-import { SubSprite } from "./subsprite";
-import { SwitchPalettesDialogButton } from "./switch-palettes-dialog";
+import { FunctionComponent } from 'preact'
+import { useEffect, useRef } from 'preact/hooks'
+import { FormattedMessage } from 'react-intl'
+import { useDispatch, useSelector } from 'react-redux'
+import { MainStore } from '../reducers'
+import { FontType, getCurrentTool, getHiddenSubsprites, getId, getPreviewPalette, getTextToolText, getViewType, isPreviewTransparent, isSubspriteVisible, setTextToolFont, setTextToolText, switchColorIndex, switchTool, toggleHiddenSubsprite, togglePreviewTransparent, Tools } from '../reducers/editing'
+import { getSprite } from '../reducers/sprite'
+import classname from '../utils/classname'
+import styles from './edit-page.module.css'
+import { SubSprite } from './subsprite'
+import { SwitchPalettesDialogButton } from './switch-palettes-dialog'
 
 export const PaletteColorSwitcher: FunctionComponent = props => {
     // const viewType = useSelector<MainStore, string>(state => state.editing.viewType);
     // const viewId = useSelector<MainStore, number>(state => state.editing.id);
     // const currentPalette = useSelector<MainStore, Color[]>(state => getSprite(state).palettes[0])
-    const colorIndex = useSelector<MainStore, number>(state => state.editing.usingColorIndex);
+    const colorIndex = useSelector<MainStore, number>(state => state.editing.usingColorIndex)
     const sprite = useSelector(getSprite)
     const previewPalette = useSelector(getPreviewPalette)
-    const palette = sprite.palettes[previewPalette] || sprite.palettes[0];
-    const dispatch = useDispatch();
+    const palette = sprite.palettes[previewPalette] || sprite.palettes[0]
+    const dispatch = useDispatch()
     return <div className={styles.paletteColorSwitcher}>
         <div className={styles.palette}>
             {
@@ -51,9 +47,9 @@ export const ToolButton: FunctionComponent<{
     tool: Tools,
     shortcut: string,
 }> = ({ tool, shortcut, children }) => {
-    const dispatch = useDispatch();
-    const currentTool = useSelector(getCurrentTool);
-    const isActive = currentTool === tool;
+    const dispatch = useDispatch()
+    const currentTool = useSelector(getCurrentTool)
+    const isActive = currentTool === tool
     return (
         <button
             className={classname(styles.toolButton, isActive && styles.active)}
@@ -62,7 +58,7 @@ export const ToolButton: FunctionComponent<{
             {children}
             <div className={styles.shortcut}>{shortcut}</div>
         </button>
-    );
+    )
 }
 
 export const EditPage: FunctionComponent = () => {
@@ -77,7 +73,7 @@ export const EditPage: FunctionComponent = () => {
     const textToolText = useSelector(getTextToolText)
     const textareaRef = useRef<HTMLInputElement>()
     useEffect(() => {
-        function onShortcutKeyPress(evt: KeyboardEvent) {
+        function onShortcutKeyPress (evt: KeyboardEvent) {
             if (evt.ctrlKey) return
             if (evt.altKey) return
             if (evt.shiftKey) return
@@ -85,38 +81,38 @@ export const EditPage: FunctionComponent = () => {
             if ((evt.target as any).nodeName.toLowerCase() === 'input') return
             if ((evt.target as any).nodeName.toLowerCase() === 'textarea') return
             switch (evt.code) {
-                case 'KeyC':
-                    evt.preventDefault()
-                    return dispatch(switchTool(Tools.Cursor))
-                case 'KeyW':
-                    evt.preventDefault()
-                    return dispatch(switchTool(Tools.Pencil))
-                case 'KeyE':
-                    evt.preventDefault()
-                    return dispatch(switchTool(Tools.Eraser))
-                case 'KeyV':
-                    evt.preventDefault()
-                    return dispatch(switchTool(Tools.ColorPicker))
-                case 'KeyD':
-                    evt.preventDefault()
-                    return dispatch(switchTool(Tools.Line))
-                case 'KeyA':
-                    evt.preventDefault()
-                    return dispatch(switchTool(Tools.Rectangle))
-                case 'KeyS':
-                    evt.preventDefault()
-                    return dispatch(switchTool(Tools.FilledRectangle))
-                case 'KeyQ':
-                    evt.preventDefault()
-                    // TODO: Quick pick color
-                    return dispatch(switchTool(Tools.ColorPicker))
-                case 'KeyF':
-                    evt.preventDefault()
-                    return dispatch(switchTool(Tools.Fill))
-                case 'KeyT':
-                    evt.preventDefault()
-                    return dispatch(switchTool(Tools.Text))
-                default:
+            case 'KeyC':
+                evt.preventDefault()
+                return dispatch(switchTool(Tools.Cursor))
+            case 'KeyW':
+                evt.preventDefault()
+                return dispatch(switchTool(Tools.Pencil))
+            case 'KeyE':
+                evt.preventDefault()
+                return dispatch(switchTool(Tools.Eraser))
+            case 'KeyV':
+                evt.preventDefault()
+                return dispatch(switchTool(Tools.ColorPicker))
+            case 'KeyD':
+                evt.preventDefault()
+                return dispatch(switchTool(Tools.Line))
+            case 'KeyA':
+                evt.preventDefault()
+                return dispatch(switchTool(Tools.Rectangle))
+            case 'KeyS':
+                evt.preventDefault()
+                return dispatch(switchTool(Tools.FilledRectangle))
+            case 'KeyQ':
+                evt.preventDefault()
+                // TODO: Quick pick color
+                return dispatch(switchTool(Tools.ColorPicker))
+            case 'KeyF':
+                evt.preventDefault()
+                return dispatch(switchTool(Tools.Fill))
+            case 'KeyT':
+                evt.preventDefault()
+                return dispatch(switchTool(Tools.Text))
+            default:
             }
         }
         window.addEventListener('keypress', onShortcutKeyPress)
@@ -159,13 +155,23 @@ export const EditPage: FunctionComponent = () => {
         </div>
         <PaletteColorSwitcher />
         <div className={styles.options}>
-        {
-            usingTool === Tools.Text &&
+            {
+                usingTool === Tools.Text &&
             <>
+                <label><FormattedMessage id="edit.editing.font" defaultMessage='Font' /></label>
+                <select onChange={evt =>
+                    dispatch(setTextToolFont(parseInt(evt.currentTarget.selectedOptions.item(0).value)))
+                }>
+                    <option value={FontType.Default}>Simsun 12x12</option>
+                    <option value={FontType.Game12x12}>Game 12x12</option>
+                    <option value={FontType.Game8x16Bold}>Game 8x16 Bold</option>
+                    <option value={FontType.Game8x16}>Game 8x16</option>
+                    <option value={FontType.Game8x8}>Game 8x8</option>
+                </select>
                 <label><FormattedMessage id="edit.editing.text" defaultMessage='Text' /></label>
                 <input ref={textareaRef} value={textToolText} onInput={evt => dispatch(setTextToolText(evt.currentTarget.value))}></input>
             </>
-        }
+            }
             <label><FormattedMessage id="edit.show-zero-index-color" defaultMessage='Show zero index color' /></label>
             <input type='checkbox' onClick={() => dispatch(togglePreviewTransparent())} checked={previewTransparent}></input>
         </div>
@@ -189,5 +195,5 @@ export const EditPage: FunctionComponent = () => {
                 }
             </div>
         }
-    </div>;
-};
+    </div>
+}

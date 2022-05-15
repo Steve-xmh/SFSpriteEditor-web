@@ -1,15 +1,15 @@
-import { Action, AnyAction } from "redux"
-import undoable from "redux-undo"
-import { MainStore } from "."
-import { Color } from "../utils/color"
-import { AnimationFrame, Sprite } from "../utils/sfsprite"
+import { Action } from 'redux'
+import undoable from 'redux-undo'
+import { MainStore } from '.'
+import { Color } from '../utils/color'
+import { AnimationFrame, Sprite } from '../utils/sfsprite'
 
 export const initialState = {
     colorMode: false,
     sprites: [] as Sprite[],
     palettes: [] as Color[][],
     animations: [] as AnimationFrame[][],
-    tilesets: [] as Uint8Array[][],
+    tilesets: [] as Uint8Array[][]
 }
 
 export type TileMap = {
@@ -28,14 +28,14 @@ export type SpriteAction = SetPixelsAction | SetSpriteAction
 export const SET_SPRITE = 'sprite/SET_SPRITE'
 export const SET_PIXELS = 'sprite/SET_PIXELS'
 
-export function setSprite(sprite: Partial<typeof initialState>) {
+export function setSprite (sprite: Partial<typeof initialState>) {
     return {
         type: SET_SPRITE,
         sprite
     }
 }
 
-export function setPixels(color: number, tilesetId: number, pixels: TileMap): SetPixelsAction {
+export function setPixels (color: number, tilesetId: number, pixels: TileMap): SetPixelsAction {
     return {
         type: SET_PIXELS,
         color,
@@ -44,43 +44,43 @@ export function setPixels(color: number, tilesetId: number, pixels: TileMap): Se
     }
 }
 
-function reducer(state = initialState, action: SpriteAction): typeof initialState {
+function reducer (state = initialState, action: SpriteAction): typeof initialState {
     switch (action.type) {
-        case SET_SPRITE:
-            {
-                const a = (action as ReturnType<typeof setSprite>).sprite
-            return {
-                ...state,
-                ...a
-            }
-            }
-        case SET_PIXELS:
-            {
-                const newTilesets = [...state.tilesets]
-                const { color, pixels, tilesetId } = action
-                if (Number.isSafeInteger(tilesetId) && tilesetId in state.tilesets) {
-                    const tileset = state.tilesets[tilesetId]
-                    for (const [key, indexes] of Object.entries(pixels)) {
-                        const tileId = Number(key)
-                        if (Number.isSafeInteger(tileId) && tileId < tileset.length) {
-                            const clone = tileset[tileId].slice()
-                            for (const index of indexes) {
-                                if (Number.isSafeInteger(index) && index < clone.length) {
-                                    clone[index] = color
-                                }
-                            }
-                            newTilesets[tilesetId] = newTilesets[tilesetId].slice()
-                            newTilesets[tilesetId][tileId] = clone
+    case SET_SPRITE:
+    {
+        const a = (action as ReturnType<typeof setSprite>).sprite
+        return {
+            ...state,
+            ...a
+        }
+    }
+    case SET_PIXELS:
+    {
+        const newTilesets = [...state.tilesets]
+        const { color, pixels, tilesetId } = action
+        if (Number.isSafeInteger(tilesetId) && tilesetId in state.tilesets) {
+            const tileset = state.tilesets[tilesetId]
+            for (const [key, indexes] of Object.entries(pixels)) {
+                const tileId = Number(key)
+                if (Number.isSafeInteger(tileId) && tileId < tileset.length) {
+                    const clone = tileset[tileId].slice()
+                    for (const index of indexes) {
+                        if (Number.isSafeInteger(index) && index < clone.length) {
+                            clone[index] = color
                         }
                     }
-                }
-                return {
-                    ...state,
-                    tilesets: newTilesets
+                    newTilesets[tilesetId] = newTilesets[tilesetId].slice()
+                    newTilesets[tilesetId][tileId] = clone
                 }
             }
-        default:
-            return state
+        }
+        return {
+            ...state,
+            tilesets: newTilesets
+        }
+    }
+    default:
+        return state
     }
 }
 
@@ -88,7 +88,7 @@ export const UNDO = 'sprite/UNDO'
 export const REDO = 'sprite/REDO'
 export const CLEAR_HISTORY = 'sprite/CLEAR_HISTORY'
 
-export function getSprite(state: MainStore): typeof initialState {
+export function getSprite (state: MainStore): typeof initialState {
     return state.sprite.present
 }
 
@@ -96,5 +96,5 @@ export default undoable(reducer, {
     undoType: UNDO,
     redoType: REDO,
     clearHistoryType: CLEAR_HISTORY,
-    limit: 256,
+    limit: 256
 })

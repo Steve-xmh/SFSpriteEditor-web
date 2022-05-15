@@ -16,7 +16,7 @@ export const defaultOptions: Options = {
     lang: navigator.language in lang ? navigator.language : 'en'
 }
 
-function loadOptions(): Options {
+function loadOptions (): Options {
     const option = localStorage.getItem('lang')
     if (option) {
         try {
@@ -29,7 +29,7 @@ function loadOptions(): Options {
     }
 }
 
-function saveOptions(options: Options): Options {
+function saveOptions (options: Options): Options {
     localStorage.setItem('lang', JSON.stringify(options))
     return options
 }
@@ -40,25 +40,25 @@ export const SET_OPTION = 'options/SET_OPTION'
 export const TOGGLE_OPTION = 'options/TOGGLE_OPTION'
 export const SWITCH_LANGUAGE = 'options/SWITCH_LANGUAGE'
 
-function reducer(state = initialState, action: AnyAction): Options {
+function reducer (state = initialState, action: AnyAction): Options {
     switch (action.type) {
-        case SWITCH_LANGUAGE:
-            return saveOptions({
-                ...state,
-                lang: action.id
-            })
-        case TOGGLE_OPTION:
-            return saveOptions({
-                ...state,
-                [action.id]: !state[action.id]
-            })
-        case SET_OPTION:
-            return saveOptions({
-                ...state,
-                [action.id]: action.value
-            })
-        default:
-            return state
+    case SWITCH_LANGUAGE:
+        return saveOptions({
+            ...state,
+            lang: action.id
+        })
+    case TOGGLE_OPTION:
+        return saveOptions({
+            ...state,
+            [action.id]: !state[action.id]
+        })
+    case SET_OPTION:
+        return saveOptions({
+            ...state,
+            [action.id]: action.value
+        })
+    default:
+        return state
     }
 }
 
@@ -78,6 +78,5 @@ export const setOption = <K extends keyof Options>(id: K, value: Options[K]) => 
 
 export const getLanguage = (state: MainStore) => state.options.lang
 export const getOption = <K extends keyof Options>(id: K) => (state: MainStore): Options[K] => state.options[id]
-
 
 export default reducer

@@ -1,8 +1,8 @@
-import { FunctionComponent } from "preact";
-import { useMemo } from "preact/hooks";
-import { useSelector } from "react-redux";
-import { getSprite } from "../reducers/sprite";
-import { renderSubSprite } from "../utils/sfsprite";
+import { FunctionComponent } from 'preact'
+import { useMemo } from 'preact/hooks'
+import { useSelector } from 'react-redux'
+import { getSprite } from '../reducers/sprite'
+import { renderSubSprite } from '../utils/sfsprite'
 
 export const SubSprite: FunctionComponent<{
     spriteId: number,
@@ -18,24 +18,24 @@ export const SubSprite: FunctionComponent<{
         ...otherProps
     } = props
     const sprite = useSelector(getSprite)
-    const thisSprite = sprite.sprites[spriteId];
+    const thisSprite = sprite.sprites[spriteId]
     const subsprite = thisSprite.subsprites[subspriteId]
-    const tileset = sprite.tilesets[thisSprite.tileSetID];
-    const palette = sprite.palettes[paletteId];
+    const tileset = sprite.tilesets[thisSprite.tileSetID]
+    const palette = sprite.palettes[paletteId]
     const preview = useMemo(() => {
         if (thisSprite) {
-            const canvas = document.createElement("canvas");
-            canvas.width = subsprite.size.x;
-            canvas.height = subsprite.size.y;
-            const ctx = canvas.getContext("2d");
+            const canvas = document.createElement('canvas')
+            canvas.width = subsprite.size.x
+            canvas.height = subsprite.size.y
+            const ctx = canvas.getContext('2d')
             if (ctx) {
-                const imgData = ctx.createImageData(canvas.width, canvas.height);
+                const imgData = ctx.createImageData(canvas.width, canvas.height)
                 renderSubSprite({
                     subsprite,
                     tileset,
-                    transparent: transparent,
-                    putPixelCallback(x, y, pixel) {
-                        const color = palette[pixel];
+                    transparent,
+                    putPixelCallback (x, y, pixel) {
+                        const color = palette[pixel]
                         imgData.data[((y * imgData.width + x) * 4) + 0] = color[0]
                         imgData.data[((y * imgData.width + x) * 4) + 1] = color[1]
                         imgData.data[((y * imgData.width + x) * 4) + 2] = color[2]
@@ -43,10 +43,10 @@ export const SubSprite: FunctionComponent<{
                     }
                 })
                 ctx.putImageData(imgData, 0, 0)
-                return canvas.toDataURL();
+                return canvas.toDataURL()
             }
         }
-        return null;
-    }, [thisSprite, tileset, palette]);
+        return null
+    }, [thisSprite, tileset, palette])
     return <img src={preview} {...otherProps} />
 }

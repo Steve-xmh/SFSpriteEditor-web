@@ -2,19 +2,19 @@ import { BufferReader } from './buffer'
 import { Color, rgbaToHexARGB } from './color'
 
 export class SFSpriteReadError extends Error {
-    constructor(public readonly errorId: number = 0) {
+    constructor (public readonly errorId: number = 0) {
         super(`SFSpriteReadError: ${errorId}`)
     }
 }
 export class HeaderTooSmallReadError extends SFSpriteReadError {
-    constructor(
+    constructor (
         public readonly fileSize: number
     ) {
         super(1)
     }
 }
 export class TilesetsHeaderOverflowReadError extends SFSpriteReadError {
-    constructor(
+    constructor (
         public readonly fileSize: number,
         public readonly address: number
     ) {
@@ -22,7 +22,7 @@ export class TilesetsHeaderOverflowReadError extends SFSpriteReadError {
     }
 }
 export class PalettesHeaderOverflowReadError extends SFSpriteReadError {
-    constructor(
+    constructor (
         public readonly fileSize: number,
         public readonly address: number
     ) {
@@ -30,15 +30,15 @@ export class PalettesHeaderOverflowReadError extends SFSpriteReadError {
     }
 }
 export class SpritesHeaderOverflowReadError extends SFSpriteReadError {
-    constructor(
+    constructor (
         public readonly fileSize: number,
         public readonly address: number
     ) {
         super(4)
     }
 }
-export class AnimationsHeaderOverflowReadError extends SFSpriteReadError { 
-    constructor(
+export class AnimationsHeaderOverflowReadError extends SFSpriteReadError {
+    constructor (
         public readonly fileSize: number,
         public readonly address: number
     ) {
@@ -47,7 +47,7 @@ export class AnimationsHeaderOverflowReadError extends SFSpriteReadError {
 }
 
 export class PalettesAddressOverflowReadError extends SFSpriteReadError {
-    constructor(
+    constructor (
         public readonly fileSize: number,
         public readonly address: number
     ) {
@@ -55,7 +55,7 @@ export class PalettesAddressOverflowReadError extends SFSpriteReadError {
     }
 }
 export class SpritesAddressOverflowReadError extends SFSpriteReadError {
-    constructor(
+    constructor (
         public readonly fileSize: number,
         public readonly address: number
     ) {
@@ -63,7 +63,7 @@ export class SpritesAddressOverflowReadError extends SFSpriteReadError {
     }
 }
 export class TilesetsAddressOverflowReadError extends SFSpriteReadError {
-    constructor(
+    constructor (
         public readonly fileSize: number,
         public readonly address: number
     ) {
@@ -71,7 +71,7 @@ export class TilesetsAddressOverflowReadError extends SFSpriteReadError {
     }
 }
 export class TilesetsEOFReadError extends SFSpriteReadError {
-    constructor(
+    constructor (
         public readonly tilesetId: number,
         public readonly fileSize: number,
         public readonly address: number
@@ -80,7 +80,7 @@ export class TilesetsEOFReadError extends SFSpriteReadError {
     }
 }
 export class TilesetsWrongPositionReadError extends SFSpriteReadError {
-    constructor(
+    constructor (
         public readonly tilesetId: number,
         public readonly fileSize: number,
         public readonly address: number
@@ -89,7 +89,7 @@ export class TilesetsWrongPositionReadError extends SFSpriteReadError {
     }
 }
 export class TilesetsWrongSizeReadError extends SFSpriteReadError {
-    constructor(
+    constructor (
         public readonly tilesetId: number,
         public readonly fileSize: number,
         public readonly address: number,
@@ -100,51 +100,51 @@ export class TilesetsWrongSizeReadError extends SFSpriteReadError {
 }
 
 export class UnsupportedColorModeReadError extends SFSpriteReadError {
-    constructor(public readonly colorDepth: number) {
+    constructor (public readonly colorDepth: number) {
         super(12)
     }
 }
 export class NoLastSubspriteMarkReadError extends SFSpriteReadError {
-    constructor(public readonly spriteId: number) {
+    constructor (public readonly spriteId: number) {
         super(13)
     }
 }
 
-function getObjSize(objSize: number, objShape: number) {
+function getObjSize (objSize: number, objShape: number) {
     switch (((objSize & 0b11) << 4) | (objShape & 0b11)) {
-        case 0x00: return { x: 8, y: 8 }
-        case 0x01: return { x: 16, y: 8 }
-        case 0x02: return { x: 8, y: 16 }
-        case 0x10: return { x: 16, y: 16 }
-        case 0x11: return { x: 32, y: 8 }
-        case 0x12: return { x: 8, y: 32 }
-        case 0x20: return { x: 32, y: 32 }
-        case 0x21: return { x: 32, y: 16 }
-        case 0x22: return { x: 16, y: 32 }
-        case 0x30: return { x: 64, y: 64 }
-        case 0x31: return { x: 64, y: 32 }
-        case 0x32: return { x: 32, y: 64 }
-        default: throw new Error('Invalid obj size')
+    case 0x00: return { x: 8, y: 8 }
+    case 0x01: return { x: 16, y: 8 }
+    case 0x02: return { x: 8, y: 16 }
+    case 0x10: return { x: 16, y: 16 }
+    case 0x11: return { x: 32, y: 8 }
+    case 0x12: return { x: 8, y: 32 }
+    case 0x20: return { x: 32, y: 32 }
+    case 0x21: return { x: 32, y: 16 }
+    case 0x22: return { x: 16, y: 32 }
+    case 0x30: return { x: 64, y: 64 }
+    case 0x31: return { x: 64, y: 32 }
+    case 0x32: return { x: 32, y: 64 }
+    default: throw new Error('Invalid obj size')
     }
 }
 
-function getObjSizeCode(objSize: { x: number; y: number }) {
-    if (objSize.x == 8 && objSize.y == 8) return { size: 0, shape: 0, }
-    else if (objSize.x == 16 && objSize.y == 8) return { size: 0, shape: 1, }
-    else if (objSize.x == 8 && objSize.y == 16) return { size: 0, shape: 2, }
-    else if (objSize.x == 16 && objSize.y == 16) return { size: 1, shape: 0, }
-    else if (objSize.x == 32 && objSize.y == 8) return { size: 1, shape: 1, }
-    if (objSize.x == 8 && objSize.y == 32) return { size: 1, shape: 2, }
-    if (objSize.x == 32 && objSize.y == 32) return { size: 2, shape: 0, }
-    if (objSize.x == 32 && objSize.y == 16) return { size: 2, shape: 1, }
-    if (objSize.x == 16 && objSize.y == 32) return { size: 2, shape: 2, }
-    if (objSize.x == 64 && objSize.y == 64) return { size: 3, shape: 0, }
-    if (objSize.x == 64 && objSize.y == 32) return { size: 3, shape: 1, }
-    if (objSize.x == 32 && objSize.y == 64) return { size: 3, shape: 2, }
+function getObjSizeCode (objSize: { x: number; y: number }) {
+    if (objSize.x == 8 && objSize.y == 8) return { size: 0, shape: 0 }
+    else if (objSize.x == 16 && objSize.y == 8) return { size: 0, shape: 1 }
+    else if (objSize.x == 8 && objSize.y == 16) return { size: 0, shape: 2 }
+    else if (objSize.x == 16 && objSize.y == 16) return { size: 1, shape: 0 }
+    else if (objSize.x == 32 && objSize.y == 8) return { size: 1, shape: 1 }
+    if (objSize.x == 8 && objSize.y == 32) return { size: 1, shape: 2 }
+    if (objSize.x == 32 && objSize.y == 32) return { size: 2, shape: 0 }
+    if (objSize.x == 32 && objSize.y == 16) return { size: 2, shape: 1 }
+    if (objSize.x == 16 && objSize.y == 32) return { size: 2, shape: 2 }
+    if (objSize.x == 64 && objSize.y == 64) return { size: 3, shape: 0 }
+    if (objSize.x == 64 && objSize.y == 32) return { size: 3, shape: 1 }
+    if (objSize.x == 32 && objSize.y == 64) return { size: 3, shape: 2 }
     throw new Error('Invalid obj size')
 }
 
-export function getSpriteBound(subsprites: SubSprite[]) {
+export function getSpriteBound (subsprites: SubSprite[]) {
     const result = { top: 0, bottom: 0, left: 0, right: 0 }
     for (const subsprite of subsprites) {
         result.right = Math.max(result.right, subsprite.position.x + subsprite.size.x)
@@ -155,7 +155,7 @@ export function getSpriteBound(subsprites: SubSprite[]) {
     return result
 }
 
-export function renderSubSprite({
+export function renderSubSprite ({
     subsprite = {} as SubSprite,
     tileset = [] as Uint8Array[],
     putPixelCallback = null,
@@ -193,7 +193,7 @@ export function renderSubSprite({
     }
 }
 
-export function renderSprite({
+export function renderSprite ({
     sprite = {} as Sprite,
     tileset = [] as Uint8Array[],
     palette = [] as Color[],
@@ -210,7 +210,7 @@ export function renderSprite({
             subsprite,
             tileset,
             transparent,
-            putPixelCallback(x, y, pixel) {
+            putPixelCallback (x, y, pixel) {
                 putPixelCallback(
                     subsprite.position.x + x,
                     subsprite.position.y + y,
@@ -229,8 +229,7 @@ export interface WriteOption {
     animations: AnimationFrame[][]
 }
 
-export function writeSpriteToBuffer(options: WriteOption) {
-
+export function writeSpriteToBuffer (options: WriteOption) {
     // 计算数据的大小
     // File Header
     let size = 4 * 5
@@ -382,7 +381,7 @@ export function writeSpriteToBuffer(options: WriteOption) {
     result.writeUint16(options.sprites.length)
     result.writeUint16(0)
     const spritesOffsets = []
-    const tileNumShift = options.colorMode ? 0 : 1;
+    const tileNumShift = options.colorMode ? 0 : 1
 
     result.seek(spritesHeaderPos + 2 * 2 + options.sprites.length * 4)
     for (const subsprites of options.sprites) {
@@ -420,7 +419,6 @@ export function writeSpriteToBuffer(options: WriteOption) {
     return result.buffer
 }
 
-
 export interface HitTestResult {
     tileId: number
     pixelIndex: number
@@ -428,7 +426,7 @@ export interface HitTestResult {
     subspriteId: number
 }
 
-export function hitTest({
+export function hitTest ({
     sprite = {} as Sprite,
     tileset = [] as Uint8Array[],
     blacklist = new Set(),
@@ -457,7 +455,7 @@ export function hitTest({
             const ty = (pixely / 8) | 0
             const tileNum = subsprite.startTile + (filpY ? sizey - 1 - ty : ty) * sizex + (filpX ? sizex - 1 - tx : tx)
             if (tileNum >= tileset.length) {
-                console.warn(`Tile number overflowed!`, tileNum, tileset.length)
+                console.warn('Tile number overflowed!', tileNum, tileset.length)
             }
             const tile = tileset[tileNum]
             const px = (pixelx % 8) | 0
@@ -477,10 +475,10 @@ export function hitTest({
     return null
 }
 
-function getFlip(filpFlag: number) {
+function getFlip (filpFlag: number) {
     return {
         h: (filpFlag & 0x1) == 1,
-        v: (filpFlag & 0x2) == 1,
+        v: (filpFlag & 0x2) == 1
     }
 }
 
@@ -518,10 +516,10 @@ OBJ Attribute 1 (R/W)
 
 /**
  * @param {ImageData} result
- * @param {Uint8Array} tileData 
- * @param {[number, number, number][]} palette 
+ * @param {Uint8Array} tileData
+ * @param {[number, number, number][]} palette
  */
-function renderTile(result: ImageData, tileData: Uint8Array, palette: Color[]) {
+function renderTile (result: ImageData, tileData: Uint8Array, palette: Color[]) {
     for (let i = 0; i < tileData.byteLength; i++) {
         const pixel = tileData[i]
         const [r, g, b] = palette[pixel]
@@ -563,11 +561,10 @@ class SFSprite {
     tileSetMeta: any[]
     tilesets: Uint8Array[][]
     /**
-     * 
-     * @param {import('./buffer').default} data 
+     *
+     * @param {import('./buffer').default} data
      */
-    constructor() {
-
+    constructor () {
         this._spriteCache = new Map()
         this.palettes = []
         this.colorMode = false
@@ -593,11 +590,10 @@ class SFSprite {
     }
 
     /**
-     * 
-     * @param {import("./buffer").BufferReader} data 
+     *
+     * @param {import("./buffer").BufferReader} data
      */
-    loadFromFileBuffer(data: import("./buffer").BufferReader) {
-
+    loadFromFileBuffer (data: import('./buffer').BufferReader) {
         this._spriteCache = new Map()
 
         // console.log('Reading SFSprite')
@@ -691,18 +687,18 @@ class SFSprite {
                 const spriteObj: SubSprite = {
                     position: {
                         x: data.readInt8(),
-                        y: data.readInt8(),
+                        y: data.readInt8()
                     },
                     size: {
                         x: 0,
-                        y: 0,
+                        y: 0
                     },
                     prohibited: false,
                     objSize: data.readUint8(),
                     objShape: data.readUint8(),
                     flip: getFlip(data.readUint8()),
                     isLastSpriteObject: data.readUint8() != 0,
-                    startTile: startTile + (data.readUint8() << (8 + tileNumberShift) & 0xFFFF),
+                    startTile: startTile + (data.readUint8() << (8 + tileNumberShift) & 0xFFFF)
                 }
                 spriteObj.size = getObjSize(spriteObj.objSize, spriteObj.objShape)
                 spriteObj.prohibited = spriteObj.objShape == 3
@@ -716,7 +712,7 @@ class SFSprite {
 
             this.sprites.push({
                 subsprites,
-                tileSetID: 0,
+                tileSetID: 0
             })
 
             data.seek(originalPosision)
@@ -801,7 +797,7 @@ class SFSprite {
                     delay: data.readUint8(),
                     loopFlag: data.readUint8(),
                     isLoop: false,
-                    palette: data.readUint8(),
+                    palette: data.readUint8()
                 }
                 animationFrame.isLoop = !!(animationFrame.loopFlag & 0x40)
                 animation.push(animationFrame)
@@ -815,13 +811,12 @@ class SFSprite {
 
         // 预先渲染一个动画帧
         this.renderAnimationFrame(0)
-
     }
 
-    saveToBytes() {
+    saveToBytes () {
     }
 
-    getSpriteBound(index: number) {
+    getSpriteBound (index: number) {
         const s = this.sprites[index].subsprites
         const result = { top: 0, bottom: 0, left: 0, right: 0 }
         for (const subsprite of s) {
@@ -833,11 +828,11 @@ class SFSprite {
         return result
     }
 
-    getAnimationFrame(index: string | number, frameIndex = 0) {
+    getAnimationFrame (index: string | number, frameIndex = 0) {
         return this._spriteCache.get(this.animations[index][frameIndex].spriteId)
     }
 
-    getAnimationFrameURL(index: any, frameIndex = 0) {
+    getAnimationFrameURL (index: any, frameIndex = 0) {
         const image = this.getAnimationFrame(index, frameIndex)
         if (!image) {
             this.renderAnimationFrame(index, frameIndex)
@@ -849,7 +844,7 @@ class SFSprite {
         return dataUrl
     }
 
-    renderAnimationFrame(index: number, frameIndex = 0) {
+    renderAnimationFrame (index: number, frameIndex = 0) {
         const animationFrame = this.animations[index][frameIndex]
         // console.log(index, animationFrame)
         return this.renderSprite({
@@ -858,7 +853,7 @@ class SFSprite {
         })
     }
 
-    markSpriteDirtyFromAnimationFrame(index: string | number, frameIndex: string | number, sideAffect = true) {
+    markSpriteDirtyFromAnimationFrame (index: string | number, frameIndex: string | number, sideAffect = true) {
         const animationFrame = this.animations[index][frameIndex]
         this._spriteCache.delete(animationFrame.spriteId)
         if (sideAffect) {
@@ -868,23 +863,23 @@ class SFSprite {
         }
     }
 
-    checkSpritesUsedTileSet(tileSetId: any) {
+    checkSpritesUsedTileSet (tileSetId: any) {
         return this.sprites.filter(v => v.tileSetID === tileSetId)
     }
 
-    markAllSpritesDirty() {
+    markAllSpritesDirty () {
         this._spriteCache.clear()
     }
 
-    markSpriteDirty(index: number) {
+    markSpriteDirty (index: number) {
         this._spriteCache.delete(index)
     }
 
-    getSpriteImage(index: number) {
+    getSpriteImage (index: number) {
         return this._spriteCache.get(index)
     }
 
-    getSpriteImageURL(index: any, palettesIndex = 0, transparent = true) {
+    getSpriteImageURL (index: any, palettesIndex = 0, transparent = true) {
         const image = this.renderSprite({
             index, palettesIndex, transparent
         })
@@ -892,7 +887,7 @@ class SFSprite {
         return dataUrl
     }
 
-    hitTest(animationIndex: string | number, animationFrame: string | number, positionX: number, positionY: number, ignoreTransparent = true) {
+    hitTest (animationIndex: string | number, animationFrame: string | number, positionX: number, positionY: number, ignoreTransparent = true) {
         const animation = this.animations[animationIndex][animationFrame]
         const sprite = this.sprites[animation.spriteId]
         for (let i = sprite.subsprites.length - 1; i >= 0; i--) {
@@ -936,7 +931,7 @@ class SFSprite {
         return null
     }
 
-    renderSpriteEx({
+    renderSpriteEx ({
         index,
         palettesIndex = 0,
         transparent = true,
@@ -988,7 +983,7 @@ class SFSprite {
         }
     }
 
-    renderSprite(options: { index: any; palettesIndex?: any; transparent?: any; blacklist?: any; putPixelCallback?: any }) {
+    renderSprite (options: { index: any; palettesIndex?: any; transparent?: any; blacklist?: any; putPixelCallback?: any }) {
         /*
         index, palettesIndex = 0, transparent = true
         */

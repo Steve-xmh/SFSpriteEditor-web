@@ -13,9 +13,9 @@ export type Color = [number, number, number, number] | [number, number, number]
  * @param color 要转换的颜色字节值，必须是 u16
  * @returns RGB 排列的颜色，每个数范围在 [0x00, 0xFF]
  */
-export function gbaToRGB(color: number): Color {
+export function gbaToRGB (color: number): Color {
     if (color < 0x0000 || color > 0xFFFF) {
-        throw new Error('Invalid color');
+        throw new Error('Invalid color')
     }
     const b = (color >> 10 & 0b11111) / 0b11111 * 0xFF
     const g = (color >> 5 & 0b11111) / 0b11111 * 0xFF
@@ -29,7 +29,7 @@ export function gbaToRGB(color: number): Color {
  * @param color RGB 排列的颜色，每个数范围在 [0x00, 0xFF]
  * @param 返回 u16 的 GBA 颜色值
  */
-export function rgbToGBA(color: Color): number {
+export function rgbToGBA (color: Color): number {
     const [r, g, b] = color.map(v => ((v & 0xFF) / 0xFF * 0b11111) | 0)
     return b << 10 | g << 5 | r
 }
@@ -42,7 +42,7 @@ export function rgbToGBA(color: Color): number {
  * @param color 要转换的颜色字节值，必须是 u16
  * @returns RGBA 排列的颜色，每个数范围在 [0x00, 0xFF]
  */
-export function ndsToRGB(color: number): Color {
+export function ndsToRGB (color: number): Color {
     const a = (color >> 15 & 0b1) * 0xFF
     const b = (color >> 10 & 0b11111) / 0b11111 * 0xFF
     const g = (color >> 5 & 0b11111) / 0b11111 * 0xFF
@@ -55,7 +55,7 @@ export function ndsToRGB(color: number): Color {
  * @param color RGBA 排列的颜色，每个数范围在 [0x00, 0xFF]
  * @returns 返回 u16 的 GBA 颜色值
  */
-export function rgbToNDS(color: Color): number {
+export function rgbToNDS (color: Color): number {
     const [r, g, b] = color.map(v => ((v & 0xFF) / 0xFF * 0b11111) | 0)
     const a = color[3] === 0xFF ? 0b1 : 0b0
     return a << 15 | b << 10 | g << 5 | r
@@ -65,7 +65,7 @@ export function rgbToNDS(color: Color): number {
  * 转换 RGB(A) 颜色到十六进制方式 #RGBA
  * @param color RGBA 排列的颜色，每个数范围在 [0x00, 0xFF]
  */
-export function rgbaToHexRGBA(color: Color): string {
+export function rgbaToHexRGBA (color: Color): string {
     return '#' + color.map(
         v => v.toString(16)
     ).map(
@@ -77,7 +77,7 @@ export function rgbaToHexRGBA(color: Color): string {
  * 转换 RGB(A) 颜色到十六进制方式 #ARGB
  * @param color RGBA 排列的颜色，每个数范围在 [0x00, 0xFF]
  */
-export function rgbaToHexARGB(color: Color): string {
+export function rgbaToHexARGB (color: Color): string {
     if (color.length === 3) {
         return '#FF' + color.map(
             v => v.toString(16)

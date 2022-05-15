@@ -1,7 +1,7 @@
-import { FunctionComponent } from "preact";
-import { FormattedMessage } from "react-intl";
-import { useSelector } from "react-redux";
-import { getUpdateSW, isRefreshNeeded } from "../reducers/pwa";
+import { FunctionComponent } from 'preact'
+import { FormattedMessage } from 'react-intl'
+import { useSelector } from 'react-redux'
+import { getUpdateSW, isRefreshNeeded } from '../reducers/pwa'
 
 export const AboutPage: FunctionComponent = () => {
     const needRefresh = useSelector(isRefreshNeeded)

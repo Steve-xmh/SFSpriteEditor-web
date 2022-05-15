@@ -1,9 +1,8 @@
-import { FunctionComponent } from "preact";
-import { FormattedDisplayName, FormattedMessage } from "react-intl";
-import { useDispatch, useSelector } from "react-redux"
-import { MainStore } from "../reducers";
-import { getLanguage, getOption, setLanguage, toggleOption } from "../reducers/options";
-import lang from "../utils/lang";
+import { FunctionComponent } from 'preact'
+import { FormattedDisplayName, FormattedMessage } from 'react-intl'
+import { useDispatch, useSelector } from 'react-redux'
+import { getLanguage, getOption, setLanguage, toggleOption } from '../reducers/options'
+import lang from '../utils/lang'
 
 export const OptionsPage: FunctionComponent = () => {
     const dispatch = useDispatch()
@@ -30,5 +29,5 @@ export const OptionsPage: FunctionComponent = () => {
             <label><FormattedMessage id="options.display-subsprite-bounds" defaultMessage='Display Subsprite bounds' /></label>
             <input type='checkbox' checked={showSubSpriteBounds} onClick={() => dispatch(toggleOption('showSubSpriteBounds'))} />
         </div>
-    </>;
-};
+    </>
+}

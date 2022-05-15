@@ -169,6 +169,12 @@
   "palettes.toggle-color-mode": {
     "defaultMessage": "Toggle color mode"
   },
+  "pwa.needrefresh": {
+    "defaultMessage": "Editor has updated!"
+  },
+  "pwa.refresh": {
+    "defaultMessage": "Click to refresh and update"
+  },
   "sprite-item.delete": {
     "defaultMessage": "Delete"
   },

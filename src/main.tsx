@@ -1,6 +1,6 @@
 import { render } from 'preact'
 import { App } from './app'
-import store, { MainStore } from './reducers'
+import store from './reducers'
 import { Provider, useSelector } from 'react-redux'
 import './index.css'
 import 'preact/debug'

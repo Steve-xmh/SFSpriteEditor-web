@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'preact'
+import { FunctionComponent, JSX } from 'preact'
 import { useEffect, useRef, useState } from 'preact/hooks'
 import { FormattedMessage } from 'react-intl'
 import { useDispatch, useSelector } from 'react-redux'
@@ -9,7 +9,7 @@ import { BufferReader } from '../utils/buffer'
 import { getSpriteBound, renderSprite, SFSprite, SFSpriteReadError, writeSpriteToBuffer } from '../utils/sfsprite'
 import styles from './file-side-page.module.css'
 import closeSvg from '../assets/close.svg'
-import { switchToSprite } from '../reducers/editing'
+import { switchPreviewPalette, switchToSprite } from '../reducers/editing'
 
 export const FileSidePage: FunctionComponent = props => {
     const dispatch = useDispatch()
@@ -29,7 +29,7 @@ export const FileSidePage: FunctionComponent = props => {
             tempCanvasRef.current = null
         }
     }, [])
-    const openFile = async (f: File) =>  {
+    const openFile = async (f: File) => {
         const buffer = await f.arrayBuffer()
         const br = new BufferReader(buffer)
         const sprite = new SFSprite()
@@ -73,9 +73,9 @@ export const FileSidePage: FunctionComponent = props => {
             return null
         }
     }
-    const onOpenFilesInputChanged = async (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const onOpenFilesInputChanged = async (evt: JSX.TargetedEvent<HTMLInputElement>) => {
         evt.preventDefault()
-        const files = evt.target.files
+        const files = evt.currentTarget.files
         if (files.length > 0) {
             dispatch(clearOpenError())
             dispatch(setLoading(true))
@@ -91,7 +91,7 @@ export const FileSidePage: FunctionComponent = props => {
             dispatch(setLoading(false))
         }
     }
-    const onOpenFileButtonClicked = async (evt: React.MouseEvent) => {
+    const onOpenFileButtonClicked = async (evt: JSX.TargetedMouseEvent<HTMLInputElement>) => {
         evt.preventDefault()
         if (supportFilePicker) {
             const files: FileSystemFileHandle[] = await (window as any).showOpenFilePicker({
@@ -101,7 +101,7 @@ export const FileSidePage: FunctionComponent = props => {
                         accept: {
                             'application/octet-stream': ['.bin', '.sfsprite']
                         }
-                    },
+                    }
                 ],
                 excludeAcceptAllOption: true,
                 multiple: true
@@ -140,7 +140,7 @@ export const FileSidePage: FunctionComponent = props => {
             }
         }
     }
-    const onSaveFileButtonClicked = async (evt: React.MouseEvent, saveAs = false) => {
+    const onSaveFileButtonClicked = async (evt: MouseEvent, saveAs = false) => {
         evt.preventDefault()
         if (supportFilePicker) {
             if (saveAs || !lastSaved) {
@@ -151,7 +151,7 @@ export const FileSidePage: FunctionComponent = props => {
                             accept: {
                                 'application/octet-stream': ['.bin', '.sfsprite']
                             }
-                        },
+                        }
                     ],
                     excludeAcceptAllOption: true
                 })
@@ -184,7 +184,7 @@ export const FileSidePage: FunctionComponent = props => {
             URL.revokeObjectURL(url)
         }
     }
-    const onNewFileClicked = (evt: React.MouseEvent) => {
+    const onNewFileClicked = (evt: MouseEvent) => {
         evt.preventDefault()
         dispatch(setSprite({
             colorMode: false,
@@ -237,19 +237,20 @@ export const FileSidePage: FunctionComponent = props => {
             </button>
         </div>
         <div className={styles.fileList}>
-        <div>
-            {
-                files.map((file, i) => <>
-                <button className={styles.openFileButton} onClick={() => {
-                    dispatch(setSprite(file.data))
-                    dispatch(switchToSprite(0))
-                }}>
-                    <img src={file.previewUrl}/>
-                    <div>{file.filename}</div>
-                </button>
-                <button className={styles.closeFileButton} onClick={() => dispatch(closeFile(i))}><img src={closeSvg} /></button>
-                </>)
-            }
+            <div>
+                {
+                    files.map((file, i) => <>
+                        <button className={styles.openFileButton} onClick={() => {
+                            dispatch(setSprite(file.data))
+                            dispatch(switchPreviewPalette(0))
+                            dispatch(switchToSprite(0))
+                        }}>
+                            <img src={file.previewUrl}/>
+                            <div>{file.filename}</div>
+                        </button>
+                        <button className={styles.closeFileButton} onClick={() => dispatch(closeFile(i))}><img src={closeSvg} /></button>
+                    </>)
+                }
             </div>
         </div>
     </div>

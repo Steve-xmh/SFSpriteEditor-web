@@ -1,28 +1,27 @@
-import { FunctionComponent } from "preact";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "preact/hooks";
-import { FormattedMessage } from "react-intl";
-import { useDispatch, useSelector } from "react-redux";
-import { AnyAction } from "redux";
-import { MainStore } from "../reducers";
-import { switchAnimation, switchAnimationFrame, switchPreviewPalette, switchToSprite } from "../reducers/editing";
-import { getSprite, setSprite } from "../reducers/sprite";
-import { setTab } from "../reducers/tab";
-import { useAnimationFrame } from "../utils/animation-frame";
-import classname from "../utils/classname";
-import { Color } from "../utils/color";
-import { AnimationFrame, getSpriteBound, renderSprite } from "../utils/sfsprite";
-import styles from "./animations-page.module.css";
+import { FunctionComponent, JSX } from 'preact'
+import { useEffect, useMemo, useState } from 'preact/hooks'
+import { FormattedMessage } from 'react-intl'
+import { useDispatch, useSelector } from 'react-redux'
+import { MainStore } from '../reducers'
+import { switchAnimation, switchAnimationFrame, switchPreviewPalette, switchToSprite } from '../reducers/editing'
+import { getSprite, setSprite } from '../reducers/sprite'
+import { setTab } from '../reducers/tab'
+import classname from '../utils/classname'
+import { Color } from '../utils/color'
+import { AnimationFrame, getSpriteBound, renderSprite } from '../utils/sfsprite'
+import styles from './animations-page.module.css'
 
 export const AnimationsPage: FunctionComponent = () => {
     const dispatch = useDispatch()
-    const sprite = useSelector(getSprite);
-    const editing = useSelector((state: MainStore) => state.editing);
-    const palette = useSelector((state: MainStore) => getSprite(state).palettes[0]);
+    const sprite = useSelector(getSprite)
+    const editing = useSelector((state: MainStore) => state.editing)
+    const palette = useSelector((state: MainStore) => getSprite(state).palettes[0])
     const animations = sprite.animations || []
     const [hoveringAnimation, setHoveringAnimation] = useState(null)
     const [currentFrameIndex, setCurrentFrameIndex] = useState(0)
     const previews = useMemo(() => {
-        return animations.map(animation => useMemo(() => {
+        const canvas = document.createElement('canvas')
+        return animations.map(animation => {
             if (animation.length === 0) {
                 return []
             }
@@ -34,44 +33,41 @@ export const AnimationsPage: FunctionComponent = () => {
                     bottom: Math.max(a.bottom, b.bottom)
                 }
             })
-            return animation.map(frame => useMemo(() => {
+            return animation.map(frame => {
                 const palette = frame.palette
                 const spriteId = frame.spriteId
                 if (sprite.sprites[spriteId] && sprite.palettes[palette]) {
-                    return useMemo(() => {
-                        const frameSprite = sprite.sprites[spriteId]
-                        const canvas = document.createElement("canvas");
-                        canvas.width = bounding.right - bounding.left;
-                        canvas.height = bounding.bottom - bounding.top;
-                        const ctx = canvas.getContext("2d");
-                        if (ctx) {
-                            const imgData = ctx.createImageData(canvas.width, canvas.height);
-                            renderSprite({
-                                sprite: frameSprite,
-                                tileset: sprite.tilesets[frameSprite.tileSetID],
-                                palette: sprite.palettes[palette],
-                                putPixelCallback: (px: number, py: number, color: Color) => {
-                                    const x = px - bounding.left;
-                                    const y = py - bounding.top;
-                                    imgData.data[(y * imgData.width + x) * 4 + 0] = color[0]
-                                    imgData.data[(y * imgData.width + x) * 4 + 1] = color[1]
-                                    imgData.data[(y * imgData.width + x) * 4 + 2] = color[2]
-                                    imgData.data[(y * imgData.width + x) * 4 + 3] = 255
-                                }
-                            });
-                            ctx.putImageData(imgData, 0, 0)
-                            return {
-                                preview: canvas.toDataURL(),
-                                delay: frame.isLoop ? ((frame.delay / 60 * 1000) | 0) : 5000,
-                            };
+                    const frameSprite = sprite.sprites[spriteId]
+                    canvas.width = bounding.right - bounding.left
+                    canvas.height = bounding.bottom - bounding.top
+                    const ctx = canvas.getContext('2d')
+                    if (ctx) {
+                        const imgData = ctx.createImageData(canvas.width, canvas.height)
+                        renderSprite({
+                            sprite: frameSprite,
+                            tileset: sprite.tilesets[frameSprite.tileSetID],
+                            palette: sprite.palettes[palette],
+                            putPixelCallback: (px: number, py: number, color: Color) => {
+                                const x = px - bounding.left
+                                const y = py - bounding.top
+                                imgData.data[(y * imgData.width + x) * 4 + 0] = color[0]
+                                imgData.data[(y * imgData.width + x) * 4 + 1] = color[1]
+                                imgData.data[(y * imgData.width + x) * 4 + 2] = color[2]
+                                imgData.data[(y * imgData.width + x) * 4 + 3] = 255
+                            }
+                        })
+                        ctx.putImageData(imgData, 0, 0)
+                        return {
+                            preview: canvas.toDataURL(),
+                            delay: frame.isLoop ? ((frame.delay / 60 * 1000) | 0) : 5000
                         }
-                        return null
-                    }, [palette, spriteId, sprite.sprites[spriteId], sprite.palettes[palette]])
+                    }
+                    return null
                 }
-                return null;
-            }, [frame]))
-        }, [animation]))
-    }, [sprite, palette]);
+                return null
+            })
+        })
+    }, [sprite, palette])
     useEffect(() => {
         if (hoveringAnimation !== null) {
             let aniId: number
@@ -101,33 +97,33 @@ export const AnimationsPage: FunctionComponent = () => {
             return () => cancelAnimationFrame(aniId)
         }
     }, [hoveringAnimation])
-    function onMouseEnter(evt: React.MouseEvent<HTMLButtonElement>) {
-        setHoveringAnimation(Number(evt.currentTarget.dataset.index))
+    function onMouseEnter (evt: MouseEvent) {
+        setHoveringAnimation(Number((evt.currentTarget as HTMLButtonElement).dataset.index))
     }
-    function onMouseLeave(evt: React.MouseEvent<HTMLButtonElement>) {
+    function onMouseLeave (evt: MouseEvent) {
         setHoveringAnimation(null)
     }
-    function getCurrentAnimationFrameSpriteId() {
+    function getCurrentAnimationFrameSpriteId () {
         const animation = sprite.animations[editing.selectedAnimationId] || []
         const currentFrame = animation[editing.selectedAnimationFrame] || { spriteId: 0, palette: 0 }
         return currentFrame.spriteId
     }
-    function getCurrentAnimationFramePaletteId() {
+    function getCurrentAnimationFramePaletteId () {
         const animation = sprite.animations[editing.selectedAnimationId] || []
         const currentFrame = animation[editing.selectedAnimationFrame] || { spriteId: 0, palette: 0 }
         return currentFrame.palette
     }
-    function getCurrentAnimationFrameLoop() {
+    function getCurrentAnimationFrameLoop () {
         const animation = sprite.animations[editing.selectedAnimationId] || []
         const currentFrame = animation[editing.selectedAnimationFrame] || { isLoop: false }
         return currentFrame.isLoop
     }
-    function getCurrentAnimationFrameDelay() {
+    function getCurrentAnimationFrameDelay () {
         const animation = sprite.animations[editing.selectedAnimationId] || []
         const currentFrame = animation[editing.selectedAnimationFrame] || { delay: 0 }
         return currentFrame.delay
     }
-    function setAnimationFrame(animationId: number, frame: number, props: Partial<AnimationFrame>) {
+    function setAnimationFrame (animationId: number, frame: number, props: Partial<AnimationFrame>) {
         if (animationId in sprite.animations && frame in sprite.animations[animationId]) {
             const newAnimations = sprite.animations.slice()
             const animation = newAnimations[animationId]
@@ -144,22 +140,22 @@ export const AnimationsPage: FunctionComponent = () => {
             }
         }
     }
-    function onInputSpriteId(evt: React.FormEvent<HTMLInputElement>) {
+    function onInputSpriteId (evt: JSX.TargetedEvent<HTMLInputElement>) {
         const value = parseInt(evt.currentTarget.value, 10)
         setAnimationFrame(editing.selectedAnimationId, editing.selectedAnimationFrame, { spriteId: isNaN(value) ? 0 : value })
     }
-    function onInputPaletteId(evt: React.FormEvent<HTMLInputElement>) {
+    function onInputPaletteId (evt: JSX.TargetedEvent<HTMLInputElement>) {
         const value = parseInt(evt.currentTarget.value, 10)
         setAnimationFrame(editing.selectedAnimationId, editing.selectedAnimationFrame, { palette: isNaN(value) ? 0 : value })
     }
-    function onInputLoop(evt: React.FormEvent<HTMLInputElement>) {
+    function onInputLoop (evt: JSX.TargetedEvent<HTMLInputElement>) {
         setAnimationFrame(editing.selectedAnimationId, editing.selectedAnimationFrame, { isLoop: evt.currentTarget.checked })
     }
-    function onInputDelay(evt: React.FormEvent<HTMLInputElement>) {
-        const value = parseInt(evt.currentTarget.value, 10)
+    function onInputDelay (evt: JSX.TargetedEvent<HTMLInputElement>) {
+        const value = parseInt((evt.currentTarget as HTMLInputElement).value, 10)
         setAnimationFrame(editing.selectedAnimationId, editing.selectedAnimationFrame, { delay: isNaN(value) ? 0 : value })
     }
-    function onNewAnimation(evt: React.MouseEvent<HTMLButtonElement>) {
+    function onNewAnimation (evt: JSX.TargetedMouseEvent<HTMLButtonElement>) {
         const newAnimations = sprite.animations.slice()
         newAnimations.push([])
         dispatch(setSprite({
@@ -167,7 +163,7 @@ export const AnimationsPage: FunctionComponent = () => {
         }))
         dispatch(switchAnimation(newAnimations.length - 1))
     }
-    function onNewAnimationFrame(evt: React.MouseEvent<HTMLButtonElement>) {
+    function onNewAnimationFrame (evt: JSX.TargetedMouseEvent<HTMLButtonElement>) {
         const newAnimations = sprite.animations.slice()
         const animation = newAnimations[editing.selectedAnimationId]
         animation.push({
@@ -181,7 +177,7 @@ export const AnimationsPage: FunctionComponent = () => {
         }))
         dispatch(switchAnimationFrame(animation.length - 1))
     }
-    function onDeleteAnimationFrame(evt: React.MouseEvent<HTMLButtonElement>) {
+    function onDeleteAnimationFrame (evt: JSX.TargetedMouseEvent<HTMLButtonElement>) {
         const newAnimations = sprite.animations.slice()
         const animation = newAnimations[editing.selectedAnimationId]
         animation.splice(editing.selectedAnimationFrame, 1)
@@ -190,7 +186,7 @@ export const AnimationsPage: FunctionComponent = () => {
         }))
         dispatch(switchAnimationFrame(Math.max(0, editing.selectedAnimationFrame - 1)))
     }
-    function onDeleteAnimation(evt: React.MouseEvent<HTMLButtonElement>) {
+    function onDeleteAnimation (evt: JSX.TargetedMouseEvent<HTMLButtonElement>) {
         const newAnimations = sprite.animations.slice()
         newAnimations.splice(editing.selectedAnimationId, 1)
         dispatch(setSprite({
@@ -198,7 +194,7 @@ export const AnimationsPage: FunctionComponent = () => {
         }))
         dispatch(switchAnimation(Math.max(0, editing.selectedAnimationId - 1)))
     }
-    function onMoveUpAnimationFrame(evt: React.MouseEvent<HTMLButtonElement>) {
+    function onMoveUpAnimationFrame (evt: JSX.TargetedMouseEvent<HTMLButtonElement>) {
         const newAnimations = sprite.animations.slice()
         const animation = newAnimations[editing.selectedAnimationId]
         const frame = animation[editing.selectedAnimationFrame]
@@ -210,7 +206,7 @@ export const AnimationsPage: FunctionComponent = () => {
         }))
         dispatch(switchAnimationFrame(editing.selectedAnimationFrame - 1))
     }
-    function onMoveDownAnimationFrame(evt: React.MouseEvent<HTMLButtonElement>) {
+    function onMoveDownAnimationFrame (evt: JSX.TargetedMouseEvent<HTMLButtonElement>) {
         const newAnimations = sprite.animations.slice()
         const animation = newAnimations[editing.selectedAnimationId]
         const frame = animation[editing.selectedAnimationFrame]
@@ -238,7 +234,7 @@ export const AnimationsPage: FunctionComponent = () => {
                                 dispatch(switchAnimationFrame(0))
                             }
                         }}
-                        onDoubleClick={() => {
+                        onDblClick={() => {
                             dispatch(setTab('edit'))
                         }}
                         onMouseEnter={onMouseEnter}
@@ -310,7 +306,7 @@ export const AnimationsPage: FunctionComponent = () => {
                                 dispatch(switchToSprite(frame.spriteId))
                                 dispatch(switchAnimationFrame(index))
                             }}
-                            onDoubleClick={() => {
+                            onDblClick={() => {
                                 dispatch(setTab('edit'))
                             }}
                         >

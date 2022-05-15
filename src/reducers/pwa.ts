@@ -1,5 +1,4 @@
 import { AnyAction } from 'redux'
-import lang from '../utils/lang'
 import { MainStore } from './index'
 
 export interface Options {
@@ -18,25 +17,25 @@ export const NEED_REFRESH = 'options/NEED_REFRESH'
 export const OFFLINE_READY = 'options/OFFLINE_READY'
 export const SET_UPDATE_SW = 'options/SET_UPDATE_SW'
 
-function reducer(state = initialState, action: AnyAction): Options {
+function reducer (state = initialState, action: AnyAction): Options {
     switch (action.type) {
-        case NEED_REFRESH:
-            return {
-                ...state,
-                needRefresh: true
-            }
-        case OFFLINE_READY:
-            return {
-                ...state,
-                offlineReady: true
-            }
-        case SET_UPDATE_SW:
-            return {
-                ...state,
-                updateSW: action.updateSW
-            }
-        default:
-            return state
+    case NEED_REFRESH:
+        return {
+            ...state,
+            needRefresh: true
+        }
+    case OFFLINE_READY:
+        return {
+            ...state,
+            offlineReady: true
+        }
+    case SET_UPDATE_SW:
+        return {
+            ...state,
+            updateSW: action.updateSW
+        }
+    default:
+        return state
     }
 }
 

@@ -1,4 +1,4 @@
-export function *line(x0: number, y0: number, x1: number, y1: number) {
+export function * line (x0: number, y0: number, x1: number, y1: number) {
     // Bresenham
     const dx = Math.abs(x1 - x0)
     const dy = Math.abs(y1 - y0)

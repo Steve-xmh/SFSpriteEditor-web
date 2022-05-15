@@ -1,9 +1,9 @@
-import { FunctionComponent } from "preact";
-import { useState } from "preact/hooks";
+import { FunctionComponent } from 'preact'
+import { useState } from 'preact/hooks'
 
 export const DebugPage: FunctionComponent = props => {
     // A text field
-    const [text, setText] = useState("");
+    const [text, setText] = useState('')
     return <>
         <h1>Debug Page</h1>
         <p>

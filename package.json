@@ -20,6 +20,14 @@
   "devDependencies": {
     "@formatjs/cli": "^4.8.2",
     "@preact/preset-vite": "^2.1.5",
+    "@typescript-eslint/eslint-plugin": "^5.23.0",
+    "@typescript-eslint/parser": "^5.23.0",
+    "eslint": "^8.0.1",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-react": "^7.29.4",
     "vite": "^2.8.0",
     "vite-plugin-pwa": "^0.11.13"
   }

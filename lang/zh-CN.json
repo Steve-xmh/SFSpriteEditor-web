@@ -192,5 +192,11 @@
   },
   "options.display-subsprite-bounds": {
     "defaultMessage": "显示子精灵边界"
+  },
+  "pwa.needrefresh": {
+    "defaultMessage": "Editor has updated!"
+  },
+  "pwa.refresh": {
+    "defaultMessage": "Click to refresh and update"
   }
 }
