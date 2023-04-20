@@ -47,6 +47,9 @@
   "animations.sprite-id": {
     "defaultMessage": "Sprite ID"
   },
+  "edit.editing.font": {
+    "defaultMessage": "Font"
+  },
   "edit.editing.text": {
     "defaultMessage": "Text"
   },
@@ -177,26 +180,5 @@
   },
   "sprite-item.delete": {
     "defaultMessage": "Delete"
-  },
-  "tab.about": {
-    "defaultMessage": "About"
-  },
-  "tab.animations": {
-    "defaultMessage": "Animations"
-  },
-  "tab.edit": {
-    "defaultMessage": "Edit"
-  },
-  "tab.file": {
-    "defaultMessage": "File"
-  },
-  "tab.options": {
-    "defaultMessage": "Options"
-  },
-  "tab.palettes": {
-    "defaultMessage": "Palettes"
-  },
-  "tab.tilesets": {
-    "defaultMessage": "Tilesets"
   }
 }

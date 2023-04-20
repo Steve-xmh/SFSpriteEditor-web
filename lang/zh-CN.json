@@ -198,5 +198,8 @@
   },
   "pwa.refresh": {
     "defaultMessage": "Click to refresh and update"
+  },
+  "edit.editing.font": {
+    "defaultMessage": "Font"
   }
 }

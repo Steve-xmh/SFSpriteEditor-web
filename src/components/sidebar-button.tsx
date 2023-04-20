@@ -1,7 +1,10 @@
-import styles from './sidebar-button.module.css'
+import { Button, Classes } from "@blueprintjs/core";
+import styles from "./sidebar-button.module.css";
 
-export function SidebarButton ({ children, ...props }) {
-    return <button className={styles.sidebarButton} {...props}>
-        {children}
-    </button>
+export function SidebarButton({ children, ...props }) {
+	return (
+		<Button className={Classes.LARGE} {...props}>
+			{children}
+		</Button>
+	);
 }

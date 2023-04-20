@@ -1,18 +1,23 @@
 .app {
     background-color: #fafafa;
-    height: 100vh;
     width: 100vw;
-    overflow: hidden;
-    display: flex;
-    flex-direction: row;
-}
-.sidebar {
-    width: 2rem;
-    flex: 0;
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: #fafafa;
-    border-right: 1px solid #ececec;
+}
+.app > *:nth-child(1) {
+    flex: 0
+}
+.app > *:nth-child(2) {
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+    display: flex;
+}
+.sidebar {
+    flex: 0;
+    margin: 16px;
+    position: absolute;
 }
 .tabpage {
     width: 20rem;

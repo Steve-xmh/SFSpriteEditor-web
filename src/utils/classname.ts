@@ -1,5 +1,5 @@
-function classname (...args: string[]): string {
-    return args.filter(v => !!v).join(' ')
+function classname(...args: string[]): string {
+	return args.filter((v) => !!v).join(" ");
 }
 
-export default classname
+export default classname;

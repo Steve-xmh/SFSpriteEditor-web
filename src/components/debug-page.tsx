@@ -1,16 +1,22 @@
-import { FunctionComponent } from 'preact'
-import { useState } from 'preact/hooks'
+import { FunctionComponent } from "react";
+import { useState } from "react/hooks";
 
-export const DebugPage: FunctionComponent = props => {
-    // A text field
-    const [text, setText] = useState('')
-    return <>
-        <h1>Debug Page</h1>
-        <p>
-            <label>
-                Text:
-                <input type="number" value={text} onInput={evt => setText(evt.currentTarget.value)} />
-            </label>
-        </p>
-    </>
-}
+export const DebugPage: FunctionComponent = (props) => {
+	// A text field
+	const [text, setText] = useState("");
+	return (
+		<>
+			<h1>Debug Page</h1>
+			<p>
+				<label>
+					Text:
+					<input
+						type="number"
+						value={text}
+						onInput={(evt) => setText(evt.currentTarget.value)}
+					/>
+				</label>
+			</p>
+		</>
+	);
+};

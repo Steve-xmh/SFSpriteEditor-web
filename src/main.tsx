@@ -1,23 +1,21 @@
-import { render } from 'preact'
-import { App } from './app'
-import store from './reducers'
-import { Provider, useSelector } from 'react-redux'
-import './index.css'
-import 'preact/debug'
-import { IntlProvider } from 'react-intl'
-import messages from './utils/lang'
-import { getLanguage } from './reducers/options'
+import { createRoot } from "react-dom/client";
+import { App } from "./app";
+import { Provider } from "jotai";
+import "./index.css";
+import { IntlProvider } from "react-intl";
+import messages from "./utils/lang";
 
 const AppHOC = () => {
-    const lang = useSelector(getLanguage)
-    return <IntlProvider messages={messages[lang]} locale={lang} defaultLocale='en'>
-        <App />
-    </IntlProvider>
-}
+	const lang = "zh-CN";
+	return (
+		<IntlProvider messages={messages[lang]} locale={lang} defaultLocale='en'>
+			<App />
+		</IntlProvider>
+	);
+};
 
-render(
-    <Provider store={store}>
-        <AppHOC />
-    </Provider>
-    , document.getElementById('app')
-)
+createRoot(document.getElementById("app")).render(
+	<Provider>
+		<AppHOC />
+	</Provider>,
+);
