@@ -120,9 +120,7 @@ export const FileSidePage: React.FC = (props) => {
 	) => {
 		evt.preventDefault();
 		if (supportFilePicker) {
-			const files: FileSystemFileHandle[] = await (
-				window as any
-			).showOpenFilePicker({
+			const files: FileSystemFileHandle[] = await showOpenFilePicker({
 				types: [
 					{
 						description: "MMSF Sprite",

@@ -1,0 +1,25 @@
+.app
+	background-color: #fafafa
+	width: 100vw
+	height: 100vh
+	display: flex
+	flex-direction: column
+	& > *:nth-child(1)
+		flex: 0
+	& > *:nth-child(2)
+		flex: 1
+		overflow: hidden
+		min-height: 0
+		display: flex
+.sidebar
+	flex: 0
+	margin: 16px
+	position: absolute
+.tabpage
+	width: 20rem
+	display: flex
+	flex-direction: column
+	background-color: #fafafa
+	border-right: 1px solid #ececec
+	overflow-x: visible
+	overflow-y: hidden

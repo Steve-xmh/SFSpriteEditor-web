@@ -1,5 +1,5 @@
 import lang from "../utils/lang";
-import { atomWithStorage, selectAtom } from "jotai/utils"
+import { atomWithStorage, selectAtom } from "jotai/utils";
 import { atom } from "jotai";
 
 export interface Options {
@@ -26,7 +26,7 @@ export const setLanguage = atom(null, (get, set) => {
 export const toggleOption = atom(null, (get, set) => {
 	const id = get(optionsAtom).lang;
 	set(optionsAtom, { ...get(optionsAtom), [id]: !get(optionsAtom)[id] });
-})
+});
 
 export const setOption = atom(null, (get, set, value) => {
 	const id = get(optionsAtom).lang;

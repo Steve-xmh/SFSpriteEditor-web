@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { App } from "./app";
 import { Provider } from "jotai";
-import "./index.css";
+import "./index.sass";
 import { IntlProvider } from "react-intl";
 import messages from "./utils/lang";
 

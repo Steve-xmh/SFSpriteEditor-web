@@ -1,0 +1,22 @@
+.side-page-files
+    min-width: min(256px, 50vw)
+    min-height: min(256px, 50vh)
+    display: flex
+    flex-direction: column
+    .title
+        padding: 8px 8px 0px 8px
+    .list
+        overflow: hidden scroll
+        padding: 0px 4px 4px 4px
+        flex: 1
+        &:has(.no-files)
+            display: flex
+            justify-content: center
+            align-items: center
+    .preview-image
+        image-rendering: pixelated
+        object-fit: contain
+        width: 64px
+        height: 64px
+        &.failed
+            opacity: 0

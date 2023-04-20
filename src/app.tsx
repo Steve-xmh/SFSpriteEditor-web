@@ -1,4 +1,4 @@
-import styles from "./app.module.css";
+import "./app.sass";
 import { useEffect } from "react";
 import { Icon } from "@iconify/react";
 import paletteSwatchVariant from "@iconify/icons-mdi/palette-swatch-variant";
@@ -12,22 +12,23 @@ import aboutIcon from "@iconify/icons-mdi/about";
 import { useIntl } from "react-intl";
 import { registerSW } from "virtual:pwa-register";
 import { isRefreshNeededAtom, updateSWAtom } from "./states/pwa";
-import { atom, useAtom, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
 	Button,
 	ButtonGroup,
 	Classes,
-	Menu,
-	MenuItem,
 	Navbar,
 	NavbarDivider,
 	NavbarGroup,
 	NavbarHeading,
+	Text,
 } from "@blueprintjs/core";
 import { FileSidePage } from "./components/side-page/files";
-import { Popover2 } from "@blueprintjs/popover2";
+import { Popover2 } from "@blueprintjs/popover2/src";
 import { AboutPage } from "./components/about-page";
 import { EditorCanvas } from "./components/editor";
+import { FileMenu } from "./components/file-menu";
+import { selectedFileState } from "./states";
 
 const rawTabAtom = atom("file");
 const tabAtom = atom(
@@ -63,9 +64,11 @@ export function App() {
 			},
 		});
 	}, []);
+	
+	const currentFile = useAtomValue(selectedFileState);
 
 	return (
-		<div className={styles.app}>
+		<div className="app">
 			<div>
 				<Navbar>
 					<NavbarGroup>
@@ -78,34 +81,7 @@ export function App() {
 								},
 							}}
 							placement="bottom-start"
-							content={
-								<Menu>
-									<MenuItem
-										text={intl.formatMessage({
-											id: "file.new",
-											defaultMessage: "New",
-										})}
-									/>
-									<MenuItem
-										text={intl.formatMessage({
-											id: "file.open",
-											defaultMessage: "Open",
-										})}
-									/>
-									<MenuItem
-										text={intl.formatMessage({
-											id: "file.save",
-											defaultMessage: "Save",
-										})}
-									/>
-									<MenuItem
-										text={intl.formatMessage({
-											id: "file.saveas",
-											defaultMessage: "Save As",
-										})}
-									/>
-								</Menu>
-							}
+							content={<FileMenu />}
 							renderTarget={({ isOpen, ref, ...p }) => (
 								<Button
 									{...p}
@@ -120,16 +96,21 @@ export function App() {
 							)}
 						/>
 					</NavbarGroup>
+					<NavbarGroup align="right">
+						<Text ellipsize>
+							{currentFile?.fileName}
+						</Text>
+					</NavbarGroup>
 				</Navbar>
 			</div>
 			<div>
 				<EditorCanvas />
 				{/* Sidebar */}
-				<div className={styles.sidebar}>
+				<div className="sidebar">
 					<ButtonGroup vertical large>
 						<Popover2
 							isOpen={currentTab === "file"}
-							position="auto"
+							placement="right-start"
 							content={<FileSidePage />}
 						>
 							<Button
@@ -144,7 +125,7 @@ export function App() {
 						</Popover2>
 						<Popover2
 							isOpen={currentTab === "edit"}
-							position="auto"
+							placement="right-start"
 							content={<FileSidePage />}
 						>
 							<Button
@@ -159,7 +140,7 @@ export function App() {
 						</Popover2>
 						<Popover2
 							isOpen={currentTab === "tilesets"}
-							position="auto"
+							placement="right-start"
 							content={<FileSidePage />}
 						>
 							<Button
@@ -174,7 +155,7 @@ export function App() {
 						</Popover2>
 						<Popover2
 							isOpen={currentTab === "palettes"}
-							position="auto"
+							placement="right-start"
 							content={<FileSidePage />}
 						>
 							<Button
@@ -189,7 +170,7 @@ export function App() {
 						</Popover2>
 						<Popover2
 							isOpen={currentTab === "sprites"}
-							position="auto"
+							placement="right-start"
 							content={<FileSidePage />}
 						>
 							<Button
@@ -204,7 +185,7 @@ export function App() {
 						</Popover2>
 						<Popover2
 							isOpen={currentTab === "animations"}
-							position="auto"
+							placement="right-start"
 							content={<FileSidePage />}
 						>
 							<Button
@@ -219,7 +200,7 @@ export function App() {
 						</Popover2>
 						<Popover2
 							isOpen={currentTab === "options"}
-							position="auto"
+							placement="right-start"
 							content={<FileSidePage />}
 						>
 							<Button
@@ -234,7 +215,7 @@ export function App() {
 						</Popover2>
 						<Popover2
 							isOpen={currentTab === "about"}
-							position="auto"
+							placement="right-start"
 							content={<AboutPage />}
 						>
 							<Button

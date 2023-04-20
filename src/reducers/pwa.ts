@@ -1,7 +1,6 @@
 import { atom } from "jotai";
 import { MainStore } from "./index";
 
-
 export const needRefresh = () => ({ type: NEED_REFRESH });
 export const offlineReady = () => ({ type: OFFLINE_READY });
 export const setUpdateSW = (updateSW: Function) => ({
