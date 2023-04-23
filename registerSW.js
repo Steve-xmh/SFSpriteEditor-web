@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/SFSpriteEditor-web/sw.js', { scope: '/SFSpriteEditor-web/' })})}
