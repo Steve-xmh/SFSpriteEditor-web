@@ -253,6 +253,10 @@ export function writeSpriteToBuffer (options: WriteOption) {
         v => v.map((i: { byteLength: any }) => i.byteLength).reduce((p: any, c: any) => p + c, 0)
     ).map(v => (v / (options.colorMode ? 1 : 2)) | 0)
         .reduce((p, c) => p + c, 0)
+	const tilesetMax = options.tilesets
+		.map((v) => v.map((i) => i.byteLength).reduce((p, c) => p + c, 0))
+		.map((v) => (v / (options.colorMode ? 1 : 2)) | 0)
+		.reduce((p, c) => Math.max(p, c), 0);
 
     console.log(tilesetHeaderSize)
     console.log(tilesetSize)
@@ -294,7 +298,7 @@ export function writeSpriteToBuffer (options: WriteOption) {
 
     // Tileset Header
     const tilesetHeaderPos = result.tell()
-    result.writeUint16(tilesetSize / tileSize | 0)
+    result.writeUint16(tilesetMax / tileSize | 0)
     result.writeUint16(tilesetSize / tileSize | 0)
     result.writeUint16(2 * 4 + tilesetHeaderSize)
     result.writeUint16(0)
