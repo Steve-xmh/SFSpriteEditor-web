@@ -5,6 +5,15 @@
 
 export type Color = [number, number, number, number] | [number, number, number]
 
+const GBA_TO_RGB_TABLE = new Map()
+const RBG_TO_GBA_TABLE = new Map()
+
+for (let i = 0; i <= 0b11111; i++) {
+    const c = (i / 0b11111 * 0xFF) | 0
+    GBA_TO_RGB_TABLE.set(i, c)
+    RBG_TO_GBA_TABLE.set(c, i)
+}
+
 /**
  * 转换 GBA 颜色到 RGB 颜色
  * GBA 颜色格式：
@@ -17,9 +26,9 @@ export function gbaToRGB (color: number): Color {
     if (color < 0x0000 || color > 0xFFFF) {
         throw new Error('Invalid color')
     }
-    const b = (color >> 10 & 0b11111) / 0b11111 * 0xFF
-    const g = (color >> 5 & 0b11111) / 0b11111 * 0xFF
-    const r = (color & 0b11111) / 0b11111 * 0xFF
+    const b = GBA_TO_RGB_TABLE.get(color >> 10 & 0b11111)
+    const g = GBA_TO_RGB_TABLE.get(color >> 5 & 0b11111)
+    const r = GBA_TO_RGB_TABLE.get(color & 0b11111)
     // console.log(color.toString(16), r, g, b)
     return [r | 0, g | 0, b | 0]
 }
@@ -30,7 +39,7 @@ export function gbaToRGB (color: number): Color {
  * @param 返回 u16 的 GBA 颜色值
  */
 export function rgbToGBA (color: Color): number {
-    const [r, g, b] = color.map(v => ((v & 0xFF) / 0xFF * 0b11111) | 0)
+    const [r, g, b] = color.map(v => RBG_TO_GBA_TABLE.get(v))
     return b << 10 | g << 5 | r
 }
 

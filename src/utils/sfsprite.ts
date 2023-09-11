@@ -258,8 +258,9 @@ export function writeSpriteToBuffer (options: WriteOption) {
 		.map((v) => (v / (options.colorMode ? 1 : 2)) | 0)
 		.reduce((p, c) => Math.max(p, c), 0);
 
-    console.log(tilesetHeaderSize)
-    console.log(tilesetSize)
+    console.log("tilesetHeaderSize", tilesetHeaderSize)
+    console.log("tilesetSize", tilesetSize, tilesetSize / tileSize)
+    console.log("tilesetMax", tilesetMax, tilesetMax / tileSize)
 
     size += tilesetHeaderSize
     size += tilesetSize
@@ -364,11 +365,8 @@ export function writeSpriteToBuffer (options: WriteOption) {
             result.writeUint8(frame.spriteId)
             result.writeUint8(frame.delay)
             let loopFlag = 0
-            if (frame.isLoop) {
-                loopFlag |= 0x40
-            }
             if (i === frames.length - 1) {
-                loopFlag |= 0xC0
+                loopFlag |= frame.isLoop ? 0x40 : 0x80
             }
             result.writeUint8(loopFlag)
             result.writeUint8(frame.palette)
@@ -419,6 +417,8 @@ export function writeSpriteToBuffer (options: WriteOption) {
     result.writeUint32(animationHeaderPos)
     result.writeUint32(spritesHeaderPos)
     result.writeUint32(1)
+
+    console.log('写入完成')
 
     return result.buffer
 }

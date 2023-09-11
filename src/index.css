@@ -12,6 +12,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@font-face {
+  font-family: 'guanzhi';
+  src: local('guanzhi') url(./utils/fonts/guanzhi.ttf) format('truetype');
+}
+
 * {
   box-sizing: border-box;
 }

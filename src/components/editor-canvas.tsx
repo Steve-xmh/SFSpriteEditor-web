@@ -52,13 +52,16 @@ export const EditorCanvas: FunctionComponent = () => {
             const offsetX = (((canvasRef.current.width - 256) / 2) | 0) + canvasView.x
             const offsetY = (((canvasRef.current.height - 256) / 2) | 0) + canvasView.y
 
-            const targetX = Math.floor((((mousePosX || mousePos.x) - offsetX - 127) / canvasView.scale))
-            const targetY = Math.floor((((mousePosY || mousePos.y) - offsetY - 127) / canvasView.scale))
+            const targetX = Math.floor((((mousePosX || mousePos.x) * window.devicePixelRatio - offsetX - 127) / canvasView.scale))
+            const targetY = Math.floor((((mousePosY || mousePos.y) * window.devicePixelRatio - offsetY - 127) / canvasView.scale))
             return { x: targetX, y: targetY }
         }
         return null
     }
-    const textCanvas = useRef(new TextCanvas())
+    const textCanvas = useRef<TextCanvas>(null)
+    if (!textCanvas.current) {
+        textCanvas.current = new TextCanvas()
+    }
     useEffect(() => {
         if (textCanvas.current) {
             textCanvas.current.setText(textToolText)
@@ -68,6 +71,7 @@ export const EditorCanvas: FunctionComponent = () => {
         if (textCanvas.current) {
             textCanvas.current.font = textToolFont
             textCanvas.current.setText(textToolText)
+            console.log("已设置绘制字体为", textToolFont)
         }
     }, [textToolFont, textCanvas.current])
     interface ToolTemp {
@@ -604,14 +608,17 @@ export const EditorCanvas: FunctionComponent = () => {
             } else {
                 setCanvasCursor('default')
             }
+            if (displayDebugMessages && textCanvas.current) {
+                ctx.putImageData(textCanvas.current.textData, canvas.width - 256 - 16, 16)
+            }
         }
     }
     function onResize () {
         const canvas = canvasRef.current
         if (canvas) {
             const rect = canvas.parentElement.getBoundingClientRect()
-            canvas.width = rect.width
-            canvas.height = rect.height
+            canvas.width = rect.width * window.devicePixelRatio
+            canvas.height = rect.height * window.devicePixelRatio
             onRedraw()
         }
     }
@@ -714,7 +721,9 @@ export const EditorCanvas: FunctionComponent = () => {
     return <div className={styles.canvas}>
         <canvas
             style={{
-                cursor: canvasCursor
+                cursor: canvasCursor,
+                width: "100%",
+                height: "100%",
             }}
             onMouseDown={onCanvasMouseDown}
             onMouseMove={onCanvasMouseMove}

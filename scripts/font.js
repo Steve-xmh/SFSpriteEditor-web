@@ -1,12 +1,10 @@
-const fs = require('fs');
-const font = require('../src/utils/fonts/font-cn-8x16-bold.json')
+const fs = require('fs')
+const font = require('../src/utils/fonts/simsun.json')
 
-for (let i = 0x21; i < 0x7F; i++) {
-    const fullWidthCode = 0xFF01 + i - 0x21
-    if (fullWidthCode in font) {
-        console.log(String.fromCharCode(i) + ': ' + i + ' ' + String.fromCharCode(fullWidthCode) + ' ' + (fullWidthCode) + ' ' + font[fullWidthCode])
-        font[i] = font[fullWidthCode]
-    }
+const dest = {}
+
+for (const [id, width, graph] of font.characters) {
+    dest[id] = [width, font.font_height, graph]
 }
 
-fs.writeFileSync('src/utils/fonts/font-cn-8x16-bold.json', JSON.stringify(font))
+fs.writeFileSync('src/utils/fonts/font-simsun-11x11.json', JSON.stringify(dest))

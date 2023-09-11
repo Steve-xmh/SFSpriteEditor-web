@@ -17,9 +17,14 @@ export enum Tools {
 export enum FontType {
     Default = 0,
     Game12x12 = 1,
-    Game8x16Bold = 2,
-    Game8x16 = 3,
-    Game8x8 = 4,
+    Simsun12x12 = 2,
+    Game8x16Bold = 3,
+    Game8x16 = 4,
+    Game8x8 = 5,
+    Muzai8x16 = 6,
+    Guanzhi = 7,
+    Simsun10x10 = 8,
+    Simsun11x11 = 9,
     
 }
 

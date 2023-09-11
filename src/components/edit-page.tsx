@@ -162,10 +162,15 @@ export const EditPage: FunctionComponent = () => {
                 <select onChange={evt =>
                     dispatch(setTextToolFont(parseInt(evt.currentTarget.selectedOptions.item(0).value)))
                 }>
-                    <option value={FontType.Default}>Simsun 12x12</option>
+                    <option value={FontType.Default}>Default 12x12</option>
+                    <option value={FontType.Simsun12x12}>Simsun 12x12</option>
+                    <option value={FontType.Simsun11x11}>Simsun 11x11</option>
+                    <option value={FontType.Simsun10x10}>Simsun 10x10</option>
                     <option value={FontType.Game12x12}>Game 12x12</option>
                     <option value={FontType.Game8x16Bold}>Game 8x16 Bold</option>
                     <option value={FontType.Game8x16}>Game 8x16</option>
+                    <option value={FontType.Muzai8x16}>Muzai 8x16</option>
+                    <option value={FontType.Guanzhi}>Guanzhi 8x8</option>
                     <option value={FontType.Game8x8}>Game 8x8</option>
                 </select>
                 <label><FormattedMessage id="edit.editing.text" defaultMessage='Text' /></label>
