@@ -3,36 +3,49 @@ import { Color } from "../../utils/color";
 
 export class Editor {
 	private ctx: CanvasRenderingContext2D;
+	private innerCanvas: OffscreenCanvas;
+	private innerCtx: OffscreenCanvasRenderingContext2D;
+	private patternCanvas: OffscreenCanvas;
+	private patternCtx: OffscreenCanvasRenderingContext2D;
 	private scale: number = 1;
 	private offset = { x: 0, y: 0 };
+	private mousePosition = { x: 0, y: 0 };
 	private sprite: SpriteState;
 	private selectedTileset: Uint8Array[];
 	private selectedPalette: Color[];
 	private isTransparent = true;
+	private backgroundPattern: CanvasPattern;
 	constructor(private canvas: HTMLCanvasElement) {
 		this.ctx = this.canvas.getContext("2d");
 		this.offset = {
 			x: this.canvas.clientWidth / 2 - 128,
 			y: this.canvas.clientHeight / 2 - 128,
 		};
-	}
-	
-	dispose() {
-		
+		this.innerCanvas = new OffscreenCanvas(256, 256);
+		this.innerCtx = this.innerCanvas.getContext("2d");
+
+		this.patternCanvas = new OffscreenCanvas(16, 16);
+		this.patternCtx = this.patternCanvas.getContext("2d");
+		this.patternCtx.fillStyle = "#BFBFBF";
+		this.patternCtx.fillRect(0, 0, 16, 16);
+		this.patternCtx.fillStyle = "#FFFFFF";
+		this.patternCtx.fillRect(0, 0, 8, 8);
+		this.patternCtx.fillRect(8, 8, 8, 8);
+		this.backgroundPattern = this.ctx.createPattern(
+			this.patternCanvas,
+			"repeat",
+		);
 	}
 
+	dispose() {}
+
 	zoomToPoint(x: number, y: number, scale: number) {
-		const offset = {
-			x: x - this.offset.x,
-			y: y - this.offset.y,
-		};
-		
-		const newWidth = this.canvas.width * scale;
-		const newHeight = this.canvas.height * scale;
-		
-		console.log(x, y, scale);
+		const amount = scale / this.scale;
+		this.scale = scale;
+		this.offset.x = x - (x - this.offset.x) * amount;
+		this.offset.y = y - (y - this.offset.y) * amount;
 	}
-	
+
 	setCurrentSprite(sprite: SpriteState) {
 		this.sprite = sprite;
 	}
@@ -46,24 +59,22 @@ export class Editor {
 		this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
 		this.ctx.save();
+
+		this.ctx.imageSmoothingEnabled = false;
+		this.ctx.fillStyle = this.backgroundPattern;
+		this.ctx.fillRect(this.offset.x, this.offset.y, 256 * this.scale, 256 * this.scale);
+
 		this.ctx.translate(this.offset.x, this.offset.y);
 		this.ctx.scale(this.scale, this.scale);
 		this.ctx.save();
 
-		this.ctx.fillStyle = "#FFF";
-		this.ctx.fillRect(0.5, 0.5, 256, 256);
-		
 		if (this.sprite) {
-			const img = this.ctx.createImageData(256, 256);
-			
-			
-			
-			this.ctx.putImageData(img, 0, 0);
+			this.ctx.drawImage(this.innerCanvas, 0, 0);
 		}
-		
+
 		this.ctx.strokeStyle = "#000";
 		this.ctx.lineWidth = 1;
-		this.ctx.strokeRect(0.5, 0.5, 256, 256);
+		this.ctx.strokeRect(-0.5, -0.5, 257, 257);
 
 		this.ctx.restore();
 
@@ -84,14 +95,10 @@ export class Editor {
 		evt.stopPropagation();
 		evt.stopImmediatePropagation();
 		if (evt.ctrlKey) {
-			const target = evt.target as HTMLCanvasElement;
-			const mouseX =
-				(evt.clientX - target.offsetLeft) * window.devicePixelRatio;
-			const mouseY = (evt.clientY - target.offsetTop) * window.devicePixelRatio;
-			console.log(evt);
-			this.scale = Math.max(1, this.scale + evt.deltaY / 100);
-			// Zoom
-			this.zoomToPoint(mouseX, mouseY, this.scale);
+			this.mousePosition.x = evt.offsetX;
+			this.mousePosition.y = evt.offsetY;
+			const targetScale = Math.max(1, this.scale - evt.deltaY / 100);
+			this.zoomToPoint(this.mousePosition.x, this.mousePosition.y, targetScale);
 		} else {
 			if (evt.shiftKey) {
 				this.offset.x -= evt.deltaY;

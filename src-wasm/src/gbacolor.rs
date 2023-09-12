@@ -1,9 +1,10 @@
 use binrw::*;
-use std::fmt::Debug;
+use std::{fmt::Debug, ops::{DerefMut, Deref}};
+use serde::*;
 
 #[binrw]
 #[brw(little)]
-#[derive(Default)]
+#[derive(Default, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub struct GBAColor(u16);
 
 impl Debug for GBAColor {
@@ -16,6 +17,20 @@ impl Debug for GBAColor {
             self.b(),
             self.0
         )
+    }
+}
+
+impl Deref for GBAColor {
+    type Target = u16;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for GBAColor {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
     }
 }
 

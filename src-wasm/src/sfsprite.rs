@@ -1,11 +1,11 @@
 use binrw::*;
 use std::{convert::TryFrom, fmt::Debug, io::SeekFrom};
-
+use serde::*;
 use crate::gbacolor::GBAColor;
 
 #[binread]
 #[br(little)]
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct SFSpriteFileHeader {
     #[br(temp)]
     tileset_offset: u32,
@@ -62,7 +62,7 @@ impl BinWrite for SFSpriteFileHeader {
 
 #[binrw]
 #[brw(little)]
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct SFSpriteTilesetHeader {
     pub max_tiles: u16,
     #[bw(calc((tileset_data.len() / 0x20) as _))]
@@ -78,7 +78,7 @@ pub struct SFSpriteTilesetHeader {
 
 #[binrw]
 #[brw(little)]
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct SFSpriteTilesetEntry {
     pub amount: u16,
     pub offset: u16,
@@ -86,7 +86,7 @@ pub struct SFSpriteTilesetEntry {
 
 #[binrw]
 #[brw(little)]
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum ColorDepth {
     #[brw(magic = 5u16)]
     #[default]
@@ -97,7 +97,7 @@ pub enum ColorDepth {
 
 #[binrw]
 #[brw(little)]
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct SFSpritePaletteHeader {
     pub color_depth: ColorDepth,
     #[bw(calc(palettes.len() as u16))]
@@ -111,7 +111,7 @@ pub struct SFSpritePaletteHeader {
 
 #[binrw]
 #[brw(little)]
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 #[br(import(animation_offset: u32))]
 pub struct SFSpriteAnimationHeader {
     #[bw(calc = animations.len() as u16)]
@@ -140,7 +140,7 @@ fn write_animations(animations: &Vec<SFSpriteAnimationEntry>) -> BinResult<()> {
 
 #[binrw]
 #[brw(little)]
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 #[br(import(animation_offset: u32))]
 pub struct SFSpriteAnimationEntry {
     #[br(parse_with = parse_animations, args(animation_offset, ) )]
@@ -171,7 +171,7 @@ fn parse_animations(animation_offset: u32) -> BinResult<Vec<SFSpriteAnimationFra
 
 #[binrw]
 #[brw(little)]
-#[derive(Default, Debug, PartialEq, Clone, Copy)]
+#[derive(Default, Debug, PartialEq, Clone, Copy, Serialize, Deserialize)]
 #[brw(repr = u8)]
 pub enum LoopFlag {
     #[default]
@@ -182,7 +182,7 @@ pub enum LoopFlag {
 
 #[binrw]
 #[brw(little)]
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct SFSpriteAnimationFrame {
     pub sprite_id: u8,
     pub delay: u8,
@@ -192,7 +192,7 @@ pub struct SFSpriteAnimationFrame {
 
 #[binrw]
 #[brw(little)]
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 #[br(import(sprite_offset: u32))]
 pub struct SFSpriteSpriteHeader {
     #[bw(calc = sprites.len() as u16)]
@@ -222,47 +222,67 @@ fn write_sprites(sprites: &Vec<SFSpriteSpriteEntry>) -> BinResult<()> {
 
 #[binrw]
 #[brw(little)]
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 #[br(import(sprite_offset: u32))]
 pub struct SFSpriteSpriteEntry {
     #[br(parse_with = parse_sprites, args(sprite_offset, ) )]
     pub objects: Vec<SFSpriteSpriteObject>,
 }
 
+// #[binrw]
+// #[brw(little)]
+// #[derive(Default, Debug, PartialEq, Clone, Copy, Serialize, Deserialize)]
+// #[brw(repr = u8)]
+// pub enum ObjectShape {
+//     #[default]
+//     Square,
+//     Horizontal,
+//     Vertical,
+//     Prohibited,
+// }
+
 #[binrw]
 #[brw(little)]
-#[derive(Default, Debug, PartialEq, Clone, Copy)]
-#[brw(repr = u8)]
+#[derive(Default, Debug, PartialEq, Clone, Copy, Serialize, Deserialize)]
+#[brw(repr = u16)]
+#[repr(u16)]
 pub enum ObjectShape {
     #[default]
-    Square,
-    Horizontal,
-    Vertical,
-    Prohibited,
+    Size8x8 = 0x0000u16,
+    Size16x8 = 0x0100,
+    Size8x16 = 0x0200,
+    Size16x16 = 0x0001,
+    Size32x8 = 0x0101,
+    Size8x32 = 0x0201,
+    Size32x32 = 0x0002,
+    Size32x16 = 0x0102,
+    Size16x32 = 0x0202,
+    Size64x64 = 0x0003,
+    Size64x32 = 0x0103,
+    Size32x64 = 0x0203,
 }
 
 #[binrw]
 #[brw(little)]
-#[derive(Default, Debug, PartialEq, Clone, Copy)]
+#[derive(Default, Debug, PartialEq, Clone, Copy, Serialize, Deserialize)]
 #[brw(repr = u8)]
-pub enum ObjectSize {
+#[repr(u8)]
+pub enum FilpFlag {
     #[default]
-    Size8 = 0,
-    Size16,
-    Size32,
-    Size64,
+    None = 0x00u8,
+    Horizontal = 0x01,
+    Vertical = 0x02,
 }
 
 #[binrw]
 #[brw(little)]
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct SFSpriteSpriteObject {
     pub tile_index_lower: u8,
     pub x: i8,
     pub y: i8,
-    pub size: ObjectSize,
     pub shape: ObjectShape,
-    pub flip_flag: u8,
+    pub flip_flag: FilpFlag,
     pub is_last: u8,
     pub tile_index_upper: u8,
 }

@@ -1,5 +1,8 @@
 import { BufferReader } from "./buffer";
 import { Color } from "./color";
+import * as wasm from "../../src-wasm/pkg";
+
+window.wasm = wasm;
 
 export class SFSpriteReadError extends Error {
 	constructor(public readonly errorId: number = 0) {

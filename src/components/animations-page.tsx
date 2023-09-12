@@ -1,5 +1,4 @@
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
-import { FormattedMessage } from "react-intl";
 import { MainStore } from "../reducers";
 import {
 	switchAnimation,

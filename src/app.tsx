@@ -9,7 +9,6 @@ import animationOutline from "@iconify/icons-mdi/animation-outline";
 import collageIcon from "@iconify/icons-mdi/collage";
 import cogIcon from "@iconify/icons-mdi/cog";
 import aboutIcon from "@iconify/icons-mdi/about";
-import { useIntl } from "react-intl";
 import { registerSW } from "virtual:pwa-register";
 import { isRefreshNeededAtom, updateSWAtom } from "./states/pwa";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
@@ -42,7 +41,6 @@ const tabAtom = atom(
 	},
 );
 export function App() {
-	const intl = useIntl();
 	const setIsRefreshNeeded = useSetAtom(isRefreshNeededAtom);
 	const setUpdateSW = useSetAtom(updateSWAtom);
 	const [currentTab, setTab] = useAtom(tabAtom);
@@ -64,7 +62,7 @@ export function App() {
 			},
 		});
 	}, []);
-	
+
 	const currentFile = useAtomValue(selectedFileState);
 
 	return (
@@ -88,18 +86,13 @@ export function App() {
 									active={isOpen}
 									elementRef={ref}
 									className={Classes.MINIMAL}
-									text={intl.formatMessage({
-										id: "tab.file",
-										defaultMessage: "File",
-									})}
+									text="文件"
 								/>
 							)}
 						/>
 					</NavbarGroup>
 					<NavbarGroup align="right">
-						<Text ellipsize>
-							{currentFile?.fileName}
-						</Text>
+						<Text ellipsize>{currentFile?.fileName}</Text>
 					</NavbarGroup>
 				</Navbar>
 			</div>
@@ -114,10 +107,7 @@ export function App() {
 							content={<FileSidePage />}
 						>
 							<Button
-								title={intl.formatMessage({
-									id: "tab.file",
-									defaultMessage: "File",
-								})}
+								title="File"
 								active={currentTab === "file"}
 								onClick={toggleTab("file")}
 								icon={<Icon icon={fileDocumentOutline} />}
@@ -129,10 +119,7 @@ export function App() {
 							content={<FileSidePage />}
 						>
 							<Button
-								title={intl.formatMessage({
-									id: "tab.edit",
-									defaultMessage: "Edit",
-								})}
+								title="Edit"
 								active={currentTab === "edit"}
 								onClick={toggleTab("edit")}
 								icon={<Icon icon={pencilIcon} />}
@@ -144,10 +131,7 @@ export function App() {
 							content={<FileSidePage />}
 						>
 							<Button
-								title={intl.formatMessage({
-									id: "tab.tilesets",
-									defaultMessage: "Tilesets",
-								})}
+								title="Tilesets"
 								active={currentTab === "tilesets"}
 								onClick={toggleTab("tilesets")}
 								icon={<Icon icon={cubeUnfolded} />}
@@ -159,10 +143,7 @@ export function App() {
 							content={<FileSidePage />}
 						>
 							<Button
-								title={intl.formatMessage({
-									id: "tab.palettes",
-									defaultMessage: "Palettes",
-								})}
+								title="Palettes"
 								active={currentTab === "palettes"}
 								onClick={toggleTab("palettes")}
 								icon={<Icon icon={paletteSwatchVariant} />}
@@ -174,10 +155,7 @@ export function App() {
 							content={<FileSidePage />}
 						>
 							<Button
-								title={intl.formatMessage({
-									id: "tab.sprites",
-									defaultMessage: "Sprites",
-								})}
+								title="Sprites"
 								active={currentTab === "sprites"}
 								onClick={toggleTab("sprites")}
 								icon={<Icon icon={collageIcon} />}
@@ -189,10 +167,7 @@ export function App() {
 							content={<FileSidePage />}
 						>
 							<Button
-								title={intl.formatMessage({
-									id: "tab.animations",
-									defaultMessage: "Animations",
-								})}
+								title="Animations"
 								active={currentTab === "animations"}
 								onClick={toggleTab("animations")}
 								icon={<Icon icon={animationOutline} />}
@@ -204,10 +179,7 @@ export function App() {
 							content={<FileSidePage />}
 						>
 							<Button
-								title={intl.formatMessage({
-									id: "tab.options",
-									defaultMessage: "Options",
-								})}
+								title="Options"
 								active={currentTab === "options"}
 								onClick={toggleTab("options")}
 								icon={<Icon icon={cogIcon} />}
@@ -219,10 +191,7 @@ export function App() {
 							content={<AboutPage />}
 						>
 							<Button
-								title={intl.formatMessage({
-									id: "tab.about",
-									defaultMessage: "About",
-								})}
+								title="About"
 								active={currentTab === "about"}
 								onClick={toggleTab("about")}
 								icon={<Icon icon={aboutIcon} />}
