@@ -3,28 +3,25 @@ name = "src-wasm"
 version = "0.1.0"
 authors = ["Steve-xmh <stevexmh@qq.com>"]
 edition = "2018"
+resolver = "2"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-[features]
-default = ["console_error_panic_hook"]
-
 [dependencies]
 wasm-bindgen = "0.2.84"
 
-# The `console_error_panic_hook` crate provides better debugging of panics by
-# logging them with `console.error`. This is great for development, but requires
-# all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
-# code size when deploying.
-console_error_panic_hook = { version = "0.1.7", optional = true }
+console_error_panic_hook = "0.1.7"
 binrw = "0.11.2"
 serde = { version = "1.0.188", features = ["derive"] }
 serde_bytes = "0.11.12"
 serde-wasm-bindgen = "0.5.0"
 js-sys = "^0.3"
+tracing = "0.1.37"
+tracing-wasm = "0.2.1"
 
 [dev-dependencies]
+show-image = "0.13.1"
 wasm-bindgen-test = "0.3.34"
 
 [profile.release]

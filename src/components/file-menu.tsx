@@ -7,9 +7,10 @@ import {
 	getSpriteBound,
 	renderSprite,
 } from "../utils/sfsprite";
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { openedFilesStatesAtom } from "../states";
 import { SFSpriteEditor } from "../../src-wasm/pkg";
+import { editorAtom } from "./editor/editor";
 
 const isFilePickerSupported =
 	"showOpenFilePicker" in window && "showSaveFilePicker" in window;
@@ -129,11 +130,7 @@ export const FileMenu: FC = () => {
 					const file = files[0]; // TODO: Load more files
 					if (file && file.kind === "file") {
 						const f = await file.getFile();
-						console.log(
-							SFSpriteEditor.readFromBuffer(
-								new Uint8Array(await f.arrayBuffer()),
-							).toJS(),
-						);
+						editor.loadFromData(new Uint8Array(await f.arrayBuffer()));
 					}
 				} else {
 					const promises = files.map(async (file) => {
@@ -160,6 +157,8 @@ export const FileMenu: FC = () => {
 			}
 		}
 	};
+	
+	const editor = useAtomValue(editorAtom);
 
 	const onOpenFilesInputChanged = async (
 		evt: React.ChangeEvent<HTMLInputElement>,
@@ -169,11 +168,7 @@ export const FileMenu: FC = () => {
 		if (files.length > 0) {
 			if (files.length === 1) {
 				const f = files[0];
-				console.log(
-					SFSpriteEditor.readFromBuffer(
-						new Uint8Array(await f.arrayBuffer()),
-					).toJS(),
-				);
+				editor.loadFromData(new Uint8Array(await f.arrayBuffer()));
 			}
 		}
 	};

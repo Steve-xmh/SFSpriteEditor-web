@@ -1,46 +1,24 @@
 import { useLayoutEffect, useRef } from "react";
-import { Editor } from "./editor";
+import { Editor, editorAtom } from "./editor";
 import { useAtomValue } from "jotai";
 import { currentEditStateAtom } from "../../states";
 
 export const EditorCanvas: React.FC = () => {
-	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const editorRef = useRef<Editor>(null);
-	const currentFile = useAtomValue(currentEditStateAtom);
+	const canvasRef = useRef<HTMLDivElement>(null);
+	const editor = useAtomValue(editorAtom);
 
 	useLayoutEffect(() => {
 		const canvas = canvasRef.current;
 		if (canvas) {
-			canvas.width = canvas.clientWidth * window.devicePixelRatio;
-			canvas.height = canvas.clientHeight * window.devicePixelRatio;
-			const editor = new Editor(canvas);
-			editor.draw();
-			const onResize = () => {
-				canvas.width = canvas.clientWidth * window.devicePixelRatio;
-				canvas.height = canvas.clientHeight * window.devicePixelRatio;
-				editor.draw();
-			};
-			const onMouseWheel = editor.onMouseWheel.bind(editor);
-			canvas.addEventListener("wheel", onMouseWheel, { passive: false });
-			window.addEventListener("resize", onResize);
-			editorRef.current = editor;
+			canvas.appendChild(editor.canvas);
 			return () => {
-				window.removeEventListener("resize", onResize);
-				canvas.removeEventListener("wheel", onMouseWheel);
-				editor.dispose();
-			};
+				canvas.removeChild(editor.canvas);
+			}
 		}
-	}, []);
-
-	useLayoutEffect(() => {
-		if (editorRef.current) {
-			editorRef.current.setCurrentSprite(currentFile);
-			editorRef.current.draw();
-		}
-	}, [currentFile]);
+	}, [canvasRef.current]);
 
 	return (
-		<canvas
+		<div
 			ref={canvasRef}
 			style={{
 				width: "100%",

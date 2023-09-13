@@ -1,7 +1,7 @@
-use binrw::*;
-use std::{convert::TryFrom, fmt::Debug, io::SeekFrom};
-use serde::*;
 use crate::gbacolor::GBAColor;
+use binrw::*;
+use serde::*;
+use std::{convert::TryFrom, fmt::Debug, io::SeekFrom};
 
 #[binread]
 #[br(little)]
@@ -93,6 +93,22 @@ pub enum ColorDepth {
     Depth4BPP,
     #[brw(magic = 6u16)]
     Depth8BPP,
+}
+
+impl ColorDepth {
+    pub fn tile_size(&self) -> usize {
+        match self {
+            ColorDepth::Depth4BPP => 8 * 8 / 2,
+            ColorDepth::Depth8BPP => 8 * 8,
+        }
+    }
+
+    pub fn tile_data_width(&self) -> usize {
+        match self {
+            ColorDepth::Depth4BPP => 4,
+            ColorDepth::Depth8BPP => 8,
+        }
+    }
 }
 
 #[binrw]
@@ -262,6 +278,59 @@ pub enum ObjectShape {
     Size32x64 = 0x0203,
 }
 
+impl ObjectShape {
+    pub fn tile_amount(&self) -> usize {
+        match self {
+            ObjectShape::Size8x8 => 1,
+            ObjectShape::Size16x8 => 2,
+            ObjectShape::Size8x16 => 2,
+            ObjectShape::Size16x16 => 4,
+            ObjectShape::Size32x8 => 4,
+            ObjectShape::Size8x32 => 4,
+            ObjectShape::Size32x32 => 16,
+            ObjectShape::Size32x16 => 8,
+            ObjectShape::Size16x32 => 8,
+            ObjectShape::Size64x64 => 64,
+            ObjectShape::Size64x32 => 32,
+            ObjectShape::Size32x64 => 32,
+        }
+    }
+
+    pub fn tile_width_amount(&self) -> usize {
+        match self {
+            ObjectShape::Size8x8 => 1,
+            ObjectShape::Size16x8 => 2,
+            ObjectShape::Size8x16 => 1,
+            ObjectShape::Size16x16 => 2,
+            ObjectShape::Size32x8 => 4,
+            ObjectShape::Size8x32 => 1,
+            ObjectShape::Size32x32 => 4,
+            ObjectShape::Size32x16 => 4,
+            ObjectShape::Size16x32 => 2,
+            ObjectShape::Size64x64 => 8,
+            ObjectShape::Size64x32 => 8,
+            ObjectShape::Size32x64 => 4,
+        }
+    }
+
+    pub fn tile_height_amount(&self) -> usize {
+        match self {
+            ObjectShape::Size8x8 => 1,
+            ObjectShape::Size16x8 => 1,
+            ObjectShape::Size8x16 => 2,
+            ObjectShape::Size16x16 => 2,
+            ObjectShape::Size32x8 => 1,
+            ObjectShape::Size8x32 => 4,
+            ObjectShape::Size32x32 => 4,
+            ObjectShape::Size32x16 => 2,
+            ObjectShape::Size16x32 => 4,
+            ObjectShape::Size64x64 => 8,
+            ObjectShape::Size64x32 => 4,
+            ObjectShape::Size32x64 => 8,
+        }
+    }
+}
+
 #[binrw]
 #[brw(little)]
 #[derive(Default, Debug, PartialEq, Clone, Copy, Serialize, Deserialize)]
@@ -272,6 +341,23 @@ pub enum FilpFlag {
     None = 0x00u8,
     Horizontal = 0x01,
     Vertical = 0x02,
+    Both = 0x03,
+}
+
+impl FilpFlag {
+    pub fn is_horizontal(&self) -> bool {
+        match self {
+            FilpFlag::Horizontal | FilpFlag::Both => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_vertical(&self) -> bool {
+        match self {
+            FilpFlag::Vertical | FilpFlag::Both => true,
+            _ => false,
+        }
+    }
 }
 
 #[binrw]

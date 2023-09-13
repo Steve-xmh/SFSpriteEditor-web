@@ -1,6 +1,9 @@
 use binrw::*;
-use std::{fmt::Debug, ops::{DerefMut, Deref}};
 use serde::*;
+use std::{
+    fmt::Debug,
+    ops::{Deref, DerefMut},
+};
 
 #[binrw]
 #[brw(little)]

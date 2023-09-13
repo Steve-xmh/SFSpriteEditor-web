@@ -1,5 +1,4 @@
 import { useAtomValue } from "jotai";
-import { FormattedMessage } from "react-intl";
 import { openedFilesStatesAtom } from "../../../states";
 import "./index.sass";
 import { Button, ButtonGroup, Divider } from "@blueprintjs/core";
