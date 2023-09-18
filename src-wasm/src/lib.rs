@@ -1,3 +1,4 @@
+pub mod font;
 pub mod gbacolor;
 pub mod sfsprite;
 
@@ -21,6 +22,13 @@ fn start() {
     tracing_wasm::set_as_global_default();
 }
 
+#[wasm_bindgen]
+pub struct HittestResult {
+    pub tile_id: usize,
+    pub pixel_index: usize,
+    pub sprite_obj_id: usize,
+}
+
 impl SFSpriteEditor {
     #[instrument]
     pub fn from_data(data: &[u8]) -> BinResult<SFSpriteEditor> {
@@ -32,7 +40,7 @@ impl SFSpriteEditor {
     #[instrument]
     pub fn load_from_data(&mut self, buffer: &[u8]) -> BinResult<()> {
         let mut cursor = std::io::Cursor::new(buffer);
-        self.data = SFSpriteFileHeader::read(&mut cursor)?;
+        self.data = SFSpriteFileHeader::read_le(&mut cursor)?;
         self.redo_stack = vec![self.data.clone()];
         self.redo_index = 0;
         info!("已加载 SFSprite 文件");
@@ -59,35 +67,17 @@ impl SFSpriteEditor {
         mut draw: impl FnMut(usize, usize, GBAColor, usize),
     ) {
         let palette = &self.data.palette_header.palettes[palette_id];
-        match self.data.palette_header.color_depth {
-            ColorDepth::Depth4BPP => {
-                self.data.tileset_header.tileset_data[index * 32..(index + 1) * 32]
-                    .iter()
-                    .enumerate()
-                    .for_each(|(i, byte)| {
-                        let x = (i % 4) * 2;
-                        let y = i / 4;
-                        let left_color_index = (byte & 0xF) as usize;
-                        let left_color = palette[left_color_index];
-                        draw(x, y, left_color, left_color_index);
-                        let right_color_index = (byte >> 4 & 0xF) as usize;
-                        let right_color = palette[right_color_index];
-                        draw(x + 1, y, right_color, right_color_index);
-                    });
-            }
-            ColorDepth::Depth8BPP => {
-                self.data.tileset_header.tileset_data[index * 64..(index + 1) * 64]
-                    .iter()
-                    .enumerate()
-                    .for_each(|(i, byte)| {
-                        let x = i % 8;
-                        let y = i / 8;
-                        let color_index = *byte as usize;
-                        let color = palette[color_index];
-                        draw(x, y, color, color_index);
-                    });
-            }
-        }
+        self.data.tileset_header.tileset_data[index * 64..(index + 1) * 64]
+            .iter()
+            .enumerate()
+            .for_each(|(i, byte)| {
+                let x = i % 8;
+                let y = i / 8;
+                let color_index = *byte as usize;
+                if let Some(color) = palette.get(color_index) {
+                    draw(x, y, *color, color_index);
+                }
+            });
     }
 
     #[instrument(skip(draw))]
@@ -106,8 +96,7 @@ impl SFSpriteEditor {
             return;
         }
         let sprite = &self.data.sprite_header.sprites[index];
-        let color_depth = self.data.palette_header.color_depth;
-        let tile_size = color_depth.tile_size();
+        let tile_size = 8 * 8;
         let tileset_entry = &self.data.tileset_header.tileset_entries[index];
         let tileset_data = &self.data.tileset_header.tileset_data[(tileset_entry.offset as usize)
             * tile_size
@@ -128,55 +117,19 @@ impl SFSpriteEditor {
                             FilpFlag::Both => size_x * (size_y - ty - 1) + (size_x - tx - 1),
                         };
                     let tile_data = &tileset_data[tile_num * tile_size..(tile_num + 1) * tile_size];
-                    for (py, line) in tile_data
-                        .chunks_exact(color_depth.tile_data_width())
-                        .enumerate()
-                    {
+                    for (py, line) in tile_data.chunks_exact(8).enumerate() {
                         for (px, data) in line.iter().enumerate() {
-                            match color_depth {
-                                ColorDepth::Depth4BPP => {
-                                    let px = px * 2;
-                                    let left_color_index = (data & 0xF) as usize;
-                                    let right_color_index = (data >> 4 & 0xF) as usize;
-                                    let left_color = self.data.palette_header.palettes[palette_id]
-                                        [left_color_index];
-                                    let right_color = self.data.palette_header.palettes[palette_id]
-                                        [right_color_index];
-                                    if left_color_index != 0 || !transparent {
-                                        draw(
-                                            obj.x as isize
-                                                + tx as isize * 8
-                                                + px as isize
-                                                + if obj.flip_flag.is_horizontal() { 1 } else { 0 },
-                                            obj.y as isize + ty as isize * 8 + py as isize,
-                                            left_color,
-                                            left_color_index,
-                                        );
-                                    }
-                                    if right_color_index != 0 || !transparent {
-                                        draw(
-                                            obj.x as isize
-                                                + tx as isize * 8
-                                                + px as isize
-                                                + if obj.flip_flag.is_horizontal() { 0 } else { 1 },
-                                            obj.y as isize + ty as isize * 8 + py as isize,
-                                            right_color,
-                                            right_color_index,
-                                        );
-                                    }
-                                }
-                                ColorDepth::Depth8BPP => {
-                                    let color_index = *data as usize;
-                                    let color =
-                                        self.data.palette_header.palettes[palette_id][color_index];
-                                    if color_index != 0 || !transparent {
-                                        draw(
-                                            obj.x as isize + tx as isize * 8 + px as isize,
-                                            obj.y as isize + ty as isize * 8 + py as isize,
-                                            color,
-                                            color_index,
-                                        );
-                                    }
+                            let color_index = *data as usize;
+                            if let Some(color) =
+                                self.data.palette_header.palettes[palette_id].get(color_index)
+                            {
+                                if color_index != 0 || !transparent {
+                                    draw(
+                                        obj.x as isize + tx as isize * 8 + px as isize,
+                                        obj.y as isize + ty as isize * 8 + py as isize,
+                                        *color,
+                                        color_index,
+                                    );
                                 }
                             }
                         }
@@ -184,6 +137,78 @@ impl SFSpriteEditor {
                 }
             }
         }
+    }
+
+    #[instrument]
+    pub fn hittest(
+        &self,
+        sprite_id: usize,
+        hit_x: isize,
+        hit_y: isize,
+        transparent: bool,
+    ) -> Option<HittestResult> {
+        if sprite_id >= self.data.sprite_header.sprites.len() {
+            return None;
+        }
+        let sprite = &self.data.sprite_header.sprites[sprite_id];
+        let tile_size = 8 * 8;
+        let tileset_entry = &self.data.tileset_header.tileset_entries[sprite_id];
+        let tileset_data = &self.data.tileset_header.tileset_data[(tileset_entry.offset as usize)
+            * tile_size
+            ..((tileset_entry.offset + tileset_entry.amount) as usize) * tile_size];
+
+        for (sprite_obj_id, obj) in sprite.objects.iter().enumerate().rev() {
+            let x = obj.x as isize;
+            let y = obj.y as isize;
+            let w = obj.shape.width() as isize;
+            let h = obj.shape.height() as isize;
+            if hit_x < x || hit_x >= x + w || hit_y < y || hit_y >= y + h {
+                continue;
+            }
+            let size_x = obj.shape.tile_width_amount() as isize;
+            let size_y = obj.shape.tile_height_amount() as isize;
+            let pixel_x = hit_x - x;
+            let pixel_y = hit_y - y;
+            let tile_x = pixel_x / 8;
+            let tile_y = pixel_y / 8;
+            let start_tile = ((obj.tile_index_upper as isize) << 8 | obj.tile_index_lower as isize)
+                << self.data.tile_number_shift as usize;
+            let tile_num = start_tile
+                + match obj.flip_flag {
+                    FilpFlag::None => tile_y * size_x + tile_x,
+                    FilpFlag::Horizontal => size_x * (size_y - tile_y - 1) + tile_x,
+                    FilpFlag::Vertical => tile_y * size_x + (size_x - tile_x - 1),
+                    FilpFlag::Both => size_x * (size_y - tile_y - 1) + (size_x - tile_x - 1),
+                };
+            let tile_data =
+                &tileset_data[(tile_num as usize) * tile_size..(tile_num as usize + 1) * tile_size];
+            let pixel_x = pixel_x % 8;
+            let pixel_y = pixel_y % 8;
+            let pixel_index = match obj.flip_flag {
+                FilpFlag::None => pixel_y * 8 + pixel_x,
+                FilpFlag::Horizontal => pixel_y * 8 + (7 - pixel_x),
+                FilpFlag::Vertical => (7 - pixel_y) * 8 + pixel_x,
+                FilpFlag::Both => (7 - pixel_y) * 8 + (7 - pixel_x),
+            };
+            let color_index = tile_data[pixel_index as usize] as usize;
+            if color_index == 0 && transparent {
+                continue;
+            } else {
+                return Some(HittestResult {
+                    tile_id: tile_num as usize,
+                    pixel_index: pixel_index as usize,
+                    sprite_obj_id,
+                });
+            }
+        }
+        None
+    }
+
+    pub fn set_pixel_by_index(&mut self, tile_id: usize, pixel_index: usize, color_index: usize) {
+        let tile_size = 8 * 8;
+        let tile_data = &mut self.data.tileset_header.tileset_data
+            [tile_id * tile_size..(tile_id + 1) * tile_size];
+        tile_data[pixel_index] = color_index as u8;
     }
 
     pub fn record(&mut self) {
@@ -271,6 +296,27 @@ impl SFSpriteEditor {
             arr.push(&JsValue::from(ci));
             draw.apply(&JsValue::NULL, &arr).unwrap();
         })
+    }
+
+    #[wasm_bindgen(js_name = "hittest")]
+    pub fn hittest_js(
+        &self,
+        sprite_id: usize,
+        hit_x: isize,
+        hit_y: isize,
+        transparent: bool,
+    ) -> Option<HittestResult> {
+        self.hittest(sprite_id, hit_x, hit_y, transparent)
+    }
+
+    #[wasm_bindgen(js_name = "setPixelByIndex")]
+    pub fn set_pixel_by_index_js(
+        &mut self,
+        tile_id: usize,
+        pixel_index: usize,
+        color_index: usize,
+    ) {
+        self.set_pixel_by_index(tile_id, pixel_index, color_index);
     }
 
     #[wasm_bindgen(js_name = "fromJS")]

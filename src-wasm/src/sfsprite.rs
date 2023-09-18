@@ -3,27 +3,57 @@ use binrw::*;
 use serde::*;
 use std::{convert::TryFrom, fmt::Debug, io::SeekFrom};
 
-#[binread]
-#[br(little)]
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct SFSpriteFileHeader {
-    #[br(temp)]
-    tileset_offset: u32,
-    #[br(temp)]
-    palette_offset: u32,
-    #[br(temp)]
-    animation_offset: u32,
-    #[br(temp)]
-    sprite_offset: u32,
     pub tile_number_shift: u32,
-    #[br(seek_before = SeekFrom::Start(tileset_offset as u64))]
     pub tileset_header: SFSpriteTilesetHeader,
-    #[br(seek_before = SeekFrom::Start(palette_offset as u64))]
     pub palette_header: SFSpritePaletteHeader,
-    #[br(seek_before = SeekFrom::Start(animation_offset as u64), args(animation_offset,))]
     pub animation_header: SFSpriteAnimationHeader,
-    #[br(seek_before = SeekFrom::Start(sprite_offset as u64), args(sprite_offset,))]
     pub sprite_header: SFSpriteSpriteHeader,
+}
+
+impl BinRead for SFSpriteFileHeader {
+    type Args<'a> = ();
+
+    fn read_options<R: io::Read + io::Seek>(
+        reader: &mut R,
+        endian: Endian,
+        _args: Self::Args<'_>,
+    ) -> BinResult<Self> {
+        let tileset_offset = u32::read_le(reader)?;
+        let palette_offset = u32::read_le(reader)?;
+        let animation_offset = u32::read_le(reader)?;
+        let sprite_offset = u32::read_le(reader)?;
+        let tile_number_shift = u32::read_le(reader)?;
+
+        reader.seek(SeekFrom::Start(tileset_offset as _))?;
+        let mut tileset_header = SFSpriteTilesetHeader::read_options(reader, endian, ())?;
+        reader.seek(SeekFrom::Start(palette_offset as _))?;
+        let palette_header = SFSpritePaletteHeader::read_options(reader, endian, ())?;
+        reader.seek(SeekFrom::Start(animation_offset as _))?;
+        let animation_header =
+            SFSpriteAnimationHeader::read_options(reader, endian, (animation_offset,))?;
+        reader.seek(SeekFrom::Start(sprite_offset as _))?;
+        let sprite_header = SFSpriteSpriteHeader::read_options(reader, endian, (sprite_offset,))?;
+
+        if palette_header.color_depth == ColorDepth::Depth4BPP {
+            // Convert tileset data from 4bpp to 8bpp
+            let mut new_tileset_data = Vec::with_capacity(tileset_header.tileset_data.len() * 2);
+            for byte in &tileset_header.tileset_data {
+                new_tileset_data.push(*byte & 0xF);
+                new_tileset_data.push(*byte >> 4);
+            }
+            tileset_header.tileset_data = new_tileset_data;
+        }
+
+        Ok(Self {
+            tile_number_shift,
+            tileset_header,
+            palette_header,
+            animation_header,
+            sprite_header,
+        })
+    }
 }
 
 impl BinWrite for SFSpriteFileHeader {
@@ -38,6 +68,29 @@ impl BinWrite for SFSpriteFileHeader {
         let header_pos = writer.stream_position()?;
         writer.seek(SeekFrom::Current(4 * 4))?;
         writer.write_le(&self.tile_number_shift)?;
+
+        if self.palette_header.color_depth == ColorDepth::Depth4BPP {
+            // Convert tileset data from 8bpp to 4bpp
+            let mut new_tileset_data =
+                Vec::with_capacity(self.tileset_header.tileset_data.len() / 2);
+            for i in 0..self.tileset_header.tileset_data.len() / 2 {
+                new_tileset_data.push(
+                    self.tileset_header.tileset_data[i * 2]
+                        | self.tileset_header.tileset_data[i * 2 + 1] << 4,
+                );
+            }
+            SFSpriteTilesetHeader::write_options(
+                &SFSpriteTilesetHeader {
+                    tileset_data: new_tileset_data,
+                    ..self.tileset_header.clone()
+                },
+                writer,
+                endian,
+                (),
+            )?;
+        } else {
+            SFSpriteTilesetHeader::write_options(&self.tileset_header, writer, endian, ())?;
+        }
 
         let tileset_offset = writer.stream_position()? as u32;
         SFSpriteTilesetHeader::write_options(&self.tileset_header, writer, endian, ())?;
@@ -86,7 +139,7 @@ pub struct SFSpriteTilesetEntry {
 
 #[binrw]
 #[brw(little)]
-#[derive(Default, Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum ColorDepth {
     #[brw(magic = 5u16)]
     #[default]
@@ -245,18 +298,6 @@ pub struct SFSpriteSpriteEntry {
     pub objects: Vec<SFSpriteSpriteObject>,
 }
 
-// #[binrw]
-// #[brw(little)]
-// #[derive(Default, Debug, PartialEq, Clone, Copy, Serialize, Deserialize)]
-// #[brw(repr = u8)]
-// pub enum ObjectShape {
-//     #[default]
-//     Square,
-//     Horizontal,
-//     Vertical,
-//     Prohibited,
-// }
-
 #[binrw]
 #[brw(little)]
 #[derive(Default, Debug, PartialEq, Clone, Copy, Serialize, Deserialize)]
@@ -329,6 +370,40 @@ impl ObjectShape {
             ObjectShape::Size32x64 => 8,
         }
     }
+
+    pub fn width(&self) -> usize {
+        match self {
+            ObjectShape::Size8x8 => 8,
+            ObjectShape::Size16x8 => 16,
+            ObjectShape::Size8x16 => 8,
+            ObjectShape::Size16x16 => 16,
+            ObjectShape::Size32x8 => 32,
+            ObjectShape::Size8x32 => 8,
+            ObjectShape::Size32x32 => 32,
+            ObjectShape::Size32x16 => 32,
+            ObjectShape::Size16x32 => 16,
+            ObjectShape::Size64x64 => 64,
+            ObjectShape::Size64x32 => 64,
+            ObjectShape::Size32x64 => 32,
+        }
+    }
+
+    pub fn height(&self) -> usize {
+        match self {
+            ObjectShape::Size8x8 => 8,
+            ObjectShape::Size16x8 => 8,
+            ObjectShape::Size8x16 => 16,
+            ObjectShape::Size16x16 => 16,
+            ObjectShape::Size32x8 => 8,
+            ObjectShape::Size8x32 => 32,
+            ObjectShape::Size32x32 => 32,
+            ObjectShape::Size32x16 => 16,
+            ObjectShape::Size16x32 => 32,
+            ObjectShape::Size64x64 => 64,
+            ObjectShape::Size64x32 => 32,
+            ObjectShape::Size32x64 => 64,
+        }
+    }
 }
 
 #[binrw]
@@ -346,17 +421,11 @@ pub enum FilpFlag {
 
 impl FilpFlag {
     pub fn is_horizontal(&self) -> bool {
-        match self {
-            FilpFlag::Horizontal | FilpFlag::Both => true,
-            _ => false,
-        }
+        matches!(self, FilpFlag::Horizontal | FilpFlag::Both)
     }
 
     pub fn is_vertical(&self) -> bool {
-        match self {
-            FilpFlag::Vertical | FilpFlag::Both => true,
-            _ => false,
-        }
+        matches!(self, FilpFlag::Vertical | FilpFlag::Both)
     }
 }
 
